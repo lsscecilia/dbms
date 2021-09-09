@@ -3,6 +3,7 @@
 ## Build project
 
 ``` bash
+cmake -H. -Bbuild
 cd build && make
 ```
 

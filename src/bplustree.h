@@ -2,21 +2,24 @@
 #include <vector>
 
 // N is number of keys in a tree node
-template <unsigned N>
 class BPlusTree {
-    template <typename T> using vector = std::vector<T>;
-	template <typename T> using shared_ptr = std::shared_ptr<T>;
-    struct node {
-        std::vector<std::shared_ptr<Node>> ptr(N+1);
-        std::vector<std::uint32_t> keys(N);
-        bool ifLeaf;
-    }
+    struct Node {
+        std::vector<std::shared_ptr<Node>> ptr;
+        std::vector<std::uint32_t> keys;
+        bool isLeaf;
+        std::uint32_t size;
+        Node(bool isLeaf, int size) : isLeaf(isLeaf), size(size) {};
+    };
+
+    std::shared_ptr<Node> root;
+    std::uint32_t size;
 
     public:
-    void insertNode();
-    void deleteNode();
-    void find(std::uint32_t key);
-    void findRange(std::uint32_t begin, std::uint32_t end);
-    void splitInternal();
-    void splitLeaf()
-}
+    void InsertNode(std::uint32_t key);
+    void InsertInternal(std::uint32_t key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child);
+    void DeleteNode();
+    void Find(std::uint32_t key);
+    void FindRange(std::uint32_t begin, std::uint32_t end);
+    void SplitInternal();
+    void SplitLeaf();
+};
