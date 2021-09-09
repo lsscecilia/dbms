@@ -1,5 +1,24 @@
 # Database project 1 - Database management system
 
+## Build project
+
+``` bash
+cd build && make
+```
+
+For release:
+```bash
+cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make
+```
+## Run project
+```
+./build/bin/project 
+```
+
+Run test:
+```
+./build/bin/project_test
+```
 ## Components
 
 ### Storage
