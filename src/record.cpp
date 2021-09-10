@@ -12,7 +12,7 @@ void Record::setRecord(string tconst_, float averageRating_, int numVotes_){
     numVotes = numVotes_;
 }
 
-int Record::getRecordSize(Record record){
-    return sizeof(record.tconst) + sizeof(record.averageRating) + sizeof(record.numVotes);
+int Record::getRecordSize(){
+    return sizeof(tconst) + sizeof(averageRating) + sizeof(numVotes);
 }
 

@@ -21,7 +21,7 @@ struct Record
     void setRecord(std::string tconst, float averageRating, int numVotes);
 
     //Get record size
-    int getRecordSize(Record record);
+    int getRecordSize();
 
 };
 
