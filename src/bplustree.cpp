@@ -3,13 +3,17 @@
 // movement of ptr value
 // last ptr value to link to the next node
 // duplicated value..? should not happen right
-void BPlusTree::InsertNode(std::uint32_t key) {
+
+// void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<Record> record)
+void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, std::uint16_t offset) {
+    Pointer newPointer(blockPtr, offset);
     if (root == nullptr) {
         // create new node
-        this->root = std::shared_ptr<Node>(new Node(true, this->size));
-        this->root->keys.push_back(key);
+        root = std::make_shared<Node>(true, size); 
+        root->keys.push_back(key);
+        root->ptrs.push_back(newPointer);
     } else {
-        std::shared_ptr<Node> traverseNode = this->root;
+        std::shared_ptr<Node> traverseNode = root;
         std::shared_ptr<Node> parentNode;
         while (!traverseNode->isLeaf) {
             // traverse until it is leaf
@@ -17,18 +21,18 @@ void BPlusTree::InsertNode(std::uint32_t key) {
             
             for (int i = 0; i < traverseNode->keys.size(); i++) {
                 if (key < traverseNode->keys[i]) {
-                    traverseNode = traverseNode->ptr[i];
+                    traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i].ptr);
                     break;
                 }
 
                 if (i == traverseNode->keys.size()-1) {
-                    traverseNode = traverseNode->ptr[i+1];
+                    traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i+1].ptr);
                 }
             }
         }
 
         // get leaf node
-        if (traverseNode->keys.size() < this->size) {
+        if (traverseNode->keys.size() < size) {
             // insert into this current node
             
             int insertPos = -1;
@@ -45,16 +49,20 @@ void BPlusTree::InsertNode(std::uint32_t key) {
                 }
             }
             if (insertPos != -1) {
-                // insert at insertPos
-                std::vector<std::uint32_t>::iterator insertItr = traverseNode->keys.begin() + insertPos;
-                traverseNode->keys.insert(insertItr, key);
-                // todo:: coresponding ptr?
+                // insert key in vector
+                std::vector<std::uint32_t>::iterator keyInsertItr = traverseNode->keys.begin() + insertPos;
+                traverseNode->keys.insert(keyInsertItr, key);
+                
+                // insert ptr in vector
+                std::vector<Pointer>::iterator ptrInsertItr = traverseNode->ptrs.begin() + insertPos;
+                traverseNode->ptrs.insert(ptrInsertItr, newPointer);
             }
 
         } else {
             // split
-            std::shared_ptr<Node> newLeaf = std::shared_ptr<Node>(new Node(true, this->size));
+            std::shared_ptr<Node> newLeaf = std::make_shared<Node>(true, size);
             std::vector<std::uint32_t> tempKeys(traverseNode->keys);
+            std::vector<Pointer> tempPtrs(traverseNode->ptrs);
 
             // to optimise, can use binary scan instead of linear scan
             int insertPos = -1;
@@ -64,37 +72,57 @@ void BPlusTree::InsertNode(std::uint32_t key) {
                     break;
                 }
                 if (i == tempKeys.size()-1) {
-                    // insert at the end of the node
+                    // insert at the end of the vector
                     tempKeys.push_back(key);
-                    // todo: coresponding ptr?
+                    // insert ptr at the second last pos of the vector
+                    tempPtrs.insert(tempPtrs.begin() + tempPtrs.size()-1, newPointer);
                 }
             }
 
             if (insertPos != -1) {
-                // insert at insertPos
+                // insert at key in vector
                 std::vector<std::uint32_t>::iterator insertItr = tempKeys.begin() + insertPos;
                 tempKeys.insert(insertItr, key);
-                // todo: coresponding ptr?
+                
+                // insert ptr in vector
+                std::vector<Pointer>::iterator ptrInsertItr = tempPtrs.begin() + insertPos;
+                tempPtrs.insert(ptrInsertItr, newPointer);
             }
 
             // split vector into 2 for 2 nodes
 
             // qn, is the splitting correct...?
-            int splitSize = (tempKeys.size() + 1)/2;
-            std::vector<std::uint32_t> firstHalf(tempKeys.begin(), tempKeys.begin() + splitSize);
-            std::vector<std::uint32_t> secondHalf(tempKeys.begin() + splitSize, tempKeys.end());
+            std::size_t splitSize = (tempKeys.size() + 1)/2;
+            std::vector<std::uint32_t> firstHalfKey(tempKeys.cbegin(), tempKeys.begin() + splitSize);
+            std::vector<std::uint32_t> secondHalfKey(tempKeys.cbegin() + splitSize, tempKeys.cend());
 
-            traverseNode->keys = firstHalf;
-            newLeaf->keys = secondHalf;
+            traverseNode->keys = firstHalfKey;
+            newLeaf->keys = secondHalfKey;
+
+            std::vector<Pointer>::const_iterator splitIter(tempPtrs.cbegin());
+            std::advance(splitIter, splitSize);
+
+            std::vector<Pointer> firstHalfPtr(tempPtrs.cbegin(), splitIter);
+            std::vector<Pointer> secondHalfPtr(splitIter, tempPtrs.cend());
+
+            // link traverseNode to the newleaf
+            Pointer nextNode(newLeaf);
+            firstHalfPtr.push_back(nextNode);
+
+            traverseNode->ptrs = firstHalfPtr;
+            newLeaf->ptrs = secondHalfPtr;
             
             // change the parent of subsequent above level
 
+            Pointer ptrTraverseNode(traverseNode);
+            Pointer ptrNewLeaf(newLeaf);
+
             // if it is the root node
-            if (traverseNode == this->root) {
-                std::shared_ptr<Node> newRoot = std::shared_ptr<Node>(new Node(false, this->size));
+            if (traverseNode == root) {
+                std::shared_ptr<Node> newRoot = std::make_shared<Node>(false, size);
                 newRoot->keys.push_back(newLeaf->keys[0]);
-                newRoot->ptr.push_back(traverseNode);
-                newRoot->ptr.push_back(newLeaf);
+                newRoot->ptrs.push_back(ptrTraverseNode);
+                newRoot->ptrs.push_back(ptrNewLeaf);
                 this->root = newRoot;
             } else {
                 InsertInternal(newLeaf->keys[0], parentNode, newLeaf);
