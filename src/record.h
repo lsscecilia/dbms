@@ -2,7 +2,6 @@
 #define RECORD_H
 
 #include <iostream>
-using namespace std;
 /*
 Data structure representing a movie record stored in blocks in the database, consisting of 3 columns:
 tconst (String)
@@ -11,13 +10,18 @@ numVotes (int)
 */
 struct Record
 {
-    string tconst;
+    std::string tconst;
     float averageRating;
     int numVotes;
 
-    int getRecordSize(){
-        return sizeof(tconst) + sizeof(averageRating) + sizeof(numVotes);
-    }
+    //constructor
+    Record(std::string tconst, float averageRating, int numVotes);
+
+    //Setter
+    void setRecord(std::string tconst, float averageRating, int numVotes);
+
+    //Get record size
+    int getRecordSize(Record record);
 
 };
 
