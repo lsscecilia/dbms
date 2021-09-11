@@ -1,5 +1,6 @@
 #include <memory>
 #include <vector>
+#include<iostream>
 
 // N is number of keys in a tree node
 class BPlusTree {
@@ -27,7 +28,8 @@ class BPlusTree {
     public:
     void InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, std::uint16_t offset);
     void InsertInternal(std::uint32_t key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child);
-    void DeleteNode();
+    int DeleteNode(std::uint32_t key); // return number of nodes deleted
+    void DeleteInternal(std::uint32_t key, std::shared_ptr<Node> current, std::shared_ptr<Node> parent); // delete an internal node
     void Find(std::uint32_t key);
     void FindRange(std::uint32_t begin, std::uint32_t end);
     void SplitInternal();

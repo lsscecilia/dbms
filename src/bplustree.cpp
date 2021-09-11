@@ -131,3 +131,93 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
     }
 }
 
+int BPlusTree::DeleteNode(std::uint32_t key) {
+
+    int numNodesDeleted = 0;
+
+    // empty tree, return
+    if (root == nullptr) {
+        std::cout << "B+ tree is empty." << std::endl;
+        return numNodesDeleted;
+    }
+    else {
+        std::shared_ptr<Node> traverseNode = root;
+        std::shared_ptr<Node> parentNode;
+        int leftSibling, rightSibling;
+        while (!traverseNode->isLeaf) {
+            // traverse tree to reach leaf node
+            parentNode = traverseNode;
+
+            for (int i = 0; i <traverseNode->keys.size(); i++) {
+
+                leftSibling = i - 1;
+                rightSibling = i + 1;
+
+                if (key < traverseNode->keys[i]) {
+                    // set traverseNode to child node if key to delete is less than traverse key
+                    // child node is left pointer of key
+                    traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i].ptr);
+                    break;
+                }
+                if (key == traverseNode->keys.size() - 1) {
+                    // key is larger than all keys in node
+                    // set traverseNode to last pointer
+                    traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i+1].ptr);
+                    break;
+                }
+            }
+        }
+
+        // leaf node is found, now search if key exists
+        int deletePos = -1;
+
+        for (int i = 0; i < traverseNode->keys.size(); i++) {
+            if (key == traverseNode->keys[i]) {
+                // key is found
+                deletePos = i;
+                break;
+            }
+        }
+
+        if (deletePos == -1){
+            // key does not exist in tree
+            std::cout << "Specified key: " << key << " to be deleted does not exist" << std::endl;
+            return numNodesDeleted;
+        }
+
+        // delete the specified record
+        // todo: function to delete record given the pointer??
+
+        // shift keys and pointers forward in the vector
+        for (int i = deletePos; i < traverseNode->keys.size() - 1; i++) {
+            traverseNode->keys[i] = traverseNode->keys[i + 1];
+            traverseNode->ptrs[i] = traverseNode->ptrs[i + 1];
+        }
+
+        // shift last pointer forward
+        traverseNode->ptrs[traverseNode->ptrs.size() - 2] = traverseNode->ptrs[traverseNode->ptrs.size() - 1];
+
+        // delete last key and pointer in leaf node
+        traverseNode->keys.pop_back();
+        traverseNode->ptrs.pop_back();
+
+        // check if traverseNode is root node
+        if (traverseNode == root) {
+            // check if root node is empty
+            if (traverseNode->keys.size() == 0) {
+                // set root as null pointer
+                root = nullptr;
+                numNodesDeleted++;
+                std::cout << "B+ tree only has root node with 1 key" << std::endl;
+                std::cout << "Root node deleted" << std::endl;
+            }
+            std::cout << "Successfully deleted" << key << "!" << std::endl;
+            return numNodesDeleted;
+        }
+
+        // check if the leaf has at least ⌊(n+1)/2⌋ keys
+        if (traverseNode->keys.size() >= (size + 1)/2) {
+        }
+    }
+}
+
