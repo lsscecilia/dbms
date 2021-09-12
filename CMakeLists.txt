@@ -23,9 +23,15 @@ include_directories( ${CMAKE_BINARY_DIR}/bin/ ) # Make sure it can be included..
 add_library(bplustree
   src/bplustree.cpp)
 
+add_library(storage 
+  src/storage.cpp
+  src/record.cpp
+  src/block.cpp)
+
 target_link_libraries(
   dbms
   bplustree
+  storage
 )
 
 # add_library(lib2
@@ -73,7 +79,9 @@ if (project_build_tests)
     test/main_test.cpp)
 
   target_link_libraries(dbms_test
-    GTest::Main)
+    GTest::Main
+    bplustree
+    storage)
 
   target_compile_definitions(dbms_test
     PRIVATE TEST_DATA="${PROJECT_SOURCE_DIR}/test/data/")
