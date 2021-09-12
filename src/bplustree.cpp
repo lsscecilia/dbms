@@ -1,21 +1,25 @@
-#include "bplustree.h"
+#include <iostream>
 
+#include "bplustree.h"
 // movement of ptr value
 // last ptr value to link to the next node
 // duplicated value..? should not happen right
 
 // void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<Record> record)
-void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, std::uint16_t offset) {
+void BPlusTree::InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uint16_t offset) {
     Pointer newPointer(blockPtr, offset);
     if (root == nullptr) {
+        std::cerr << "root is nullptr, insert immediately" << std::endl;
         // create new node
         root = std::make_shared<Node>(true, size); 
         root->keys.push_back(key);
         root->ptrs.push_back(newPointer);
     } else {
+        std::cerr << "root is not nullptr" << std::endl;
         std::shared_ptr<Node> traverseNode = root;
         std::shared_ptr<Node> parentNode;
         while (!traverseNode->isLeaf) {
+            std::cerr << "traverse node is not leaf" << std::endl;
             // traverse until it is leaf
             parentNode = traverseNode;
             
@@ -27,12 +31,15 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
 
                 if (i == traverseNode->keys.size()-1) {
                     traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i+1].ptr);
+                    break;
                 }
             }
         }
 
+        std::cerr << "traverse node is at leaf node" << std::endl;
         // get leaf node
         if (traverseNode->keys.size() < size) {
+            std::cerr << "current traverseNode still have empty space" << std::endl;
             // insert into this current node
             
             int insertPos = -1;
@@ -43,14 +50,13 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
                 }
 
                 if (i == traverseNode->keys.size()-1) {
-                    // insert at the end of the node
-                    traverseNode->keys.push_back(key);
-                    // todo:: coresponding ptr?
+                    insertPos = traverseNode->keys.size();
                 }
             }
+            std::cerr << "insert at pos: " << insertPos << std::endl;
             if (insertPos != -1) {
                 // insert key in vector
-                std::vector<std::uint32_t>::iterator keyInsertItr = traverseNode->keys.begin() + insertPos;
+                std::vector<float>::iterator keyInsertItr = traverseNode->keys.begin() + insertPos;
                 traverseNode->keys.insert(keyInsertItr, key);
                 
                 // insert ptr in vector
@@ -59,14 +65,19 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
             }
 
         } else {
+            std::cerr << "current traverseNode does not have empty space" << std::endl;
             // split
             std::shared_ptr<Node> newLeaf = std::make_shared<Node>(true, size);
-            std::vector<std::uint32_t> tempKeys(traverseNode->keys);
+            std::cerr << "traverse node key size: " << traverseNode->keys.size() << std::endl;
+            std::vector<float> tempKeys(traverseNode->keys);
             std::vector<Pointer> tempPtrs(traverseNode->ptrs);
+
+            std::cerr << "copy tempKey size: " << tempKeys.size() << std::endl;
 
             // to optimise, can use binary scan instead of linear scan
             int insertPos = -1;
-            for (int i = 0; tempKeys.size(); i++) {
+            for (int i = 0; i < tempKeys.size(); i++) {
+                std::cerr << "stuck in for loop? " << i  << std::endl;
                 if (key < tempKeys[i]) {
                     insertPos = i;
                     break;
@@ -76,12 +87,14 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
                     tempKeys.push_back(key);
                     // insert ptr at the second last pos of the vector
                     tempPtrs.insert(tempPtrs.begin() + tempPtrs.size()-1, newPointer);
+                    break;
                 }
             }
+            std::cerr << "insert pos: " << insertPos << std::endl; 
 
             if (insertPos != -1) {
                 // insert at key in vector
-                std::vector<std::uint32_t>::iterator insertItr = tempKeys.begin() + insertPos;
+                std::vector<float>::iterator insertItr = tempKeys.begin() + insertPos;
                 tempKeys.insert(insertItr, key);
                 
                 // insert ptr in vector
@@ -93,8 +106,11 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
 
             // qn, is the splitting correct...?
             std::size_t splitSize = (tempKeys.size() + 1)/2;
-            std::vector<std::uint32_t> firstHalfKey(tempKeys.cbegin(), tempKeys.begin() + splitSize);
-            std::vector<std::uint32_t> secondHalfKey(tempKeys.cbegin() + splitSize, tempKeys.cend());
+            std::vector<float> firstHalfKey(tempKeys.cbegin(), tempKeys.begin() + splitSize);
+            std::vector<float> secondHalfKey(tempKeys.cbegin() + splitSize, tempKeys.cend());
+
+            std::cerr << "first half key: " << firstHalfKey.size() << std::endl;
+            std::cerr << "second half key: " << secondHalfKey.size() << std::endl;
 
             traverseNode->keys = firstHalfKey;
             newLeaf->keys = secondHalfKey;
@@ -109,6 +125,9 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
             Pointer nextNode(newLeaf);
             firstHalfPtr.push_back(nextNode);
 
+            std::cerr << "first half ptr: " << firstHalfPtr.size() << std::endl;
+            std::cerr << "second half ptr: " << secondHalfPtr.size() << std::endl;
+
             traverseNode->ptrs = firstHalfPtr;
             newLeaf->ptrs = secondHalfPtr;
             
@@ -120,6 +139,7 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
             // if it is the root node
             if (traverseNode == root) {
                 std::shared_ptr<Node> newRoot = std::make_shared<Node>(false, size);
+                std::cerr << "key for new root: " << newLeaf->keys[0] << std::endl;
                 newRoot->keys.push_back(newLeaf->keys[0]);
                 newRoot->ptrs.push_back(ptrTraverseNode);
                 newRoot->ptrs.push_back(ptrNewLeaf);
@@ -129,5 +149,155 @@ void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<void> blockPtr, st
             }
         }
     }
+    std::cerr << "end insert function" << std::endl;
 }
 
+void BPlusTree::InsertInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child) {
+    std::cerr << "insert internal, key: " << key << std::endl;
+    Pointer newPointer(child);
+
+    // parent still have space
+    if (parent->keys.size() < size) {
+        std::cerr << "parent stil have space" << std::endl;
+        int insertPos = -1;
+        for (int i = 0; i < parent->keys.size(); i++) {
+            if (key < parent->keys[i]) {
+                insertPos = i;
+                break;
+            }
+
+            if (i == parent->keys.size()-1) {
+                insertPos = parent->keys.size();
+            }
+        }
+
+        std::cerr << "insert at pos: " << insertPos << std::endl;
+        if (insertPos != -1) {
+            // insert key in vector
+            std::vector<float>::iterator keyInsertItr = parent->keys.begin() + insertPos;
+            parent->keys.insert(keyInsertItr, key);
+            
+            // insert ptr in vector
+            std::vector<Pointer>::iterator ptrInsertItr = parent->ptrs.begin() + insertPos + 1;
+            parent->ptrs.insert(ptrInsertItr, newPointer);
+        }
+    } else {
+        // parent does not have space, split the parent node into 2
+        std::cerr << "parent does not have space" << std::endl;
+
+        std::shared_ptr<Node> newInternalNode = std::make_shared<Node>(false, size);
+
+        std::vector<float> tempKeys(parent->keys);
+        std::vector<Pointer> tempPtrs(parent->ptrs);
+
+        // insert into temp key & ptr
+        int insertPos = -1;
+        for (int i = 0; i < tempKeys.size(); i++) {
+            if (key < tempKeys[i]) {
+                insertPos = i;
+                break;
+            }
+
+            if (i == tempKeys.size()-1) {
+                insertPos = tempKeys.size();
+                break;
+            }
+        }
+        std::cerr << "insert at pos: " << insertPos << std::endl;
+        if (insertPos != -1) {
+            // insert key in vector
+            std::vector<float>::iterator keyInsertItr = tempKeys.begin() + insertPos;
+            tempKeys.insert(keyInsertItr, key);
+            
+            // insert ptr in vector
+            std::vector<Pointer>::iterator ptrInsertItr = tempPtrs.begin() + insertPos + 1;
+            tempPtrs.insert(ptrInsertItr, newPointer);
+        }
+
+        // split temp key & ptr
+        std::size_t splitSize = (tempKeys.size() + 1)/2;
+        std::cerr << "split size :" << splitSize  << std::endl;
+        std::vector<float> firstHalfKey(tempKeys.cbegin(), tempKeys.begin() + splitSize);
+        // +1 becuase for the second half dont need the first key
+        std::vector<float> secondHalfKey(tempKeys.cbegin() + splitSize + 1, tempKeys.cend());
+
+        std::cerr << "first half key: " << firstHalfKey.size() << std::endl;
+        std::cerr << "second half key: " << secondHalfKey.size() << std::endl;
+
+        parent->keys = firstHalfKey;
+        newInternalNode->keys = secondHalfKey;
+
+        std::vector<Pointer>::const_iterator splitIter(tempPtrs.cbegin());
+        std::advance(splitIter, splitSize);
+
+        std::vector<Pointer> firstHalfPtr(tempPtrs.cbegin(), splitIter + 1);
+        std::vector<Pointer> secondHalfPtr(splitIter + 1, tempPtrs.cend());
+
+        parent->ptrs = firstHalfPtr;
+        newInternalNode->ptrs = secondHalfPtr;
+
+        std::cerr << "split first half, key size: " << firstHalfKey.size() << " , ptr size: " << firstHalfPtr.size() << std::endl;
+        std::cerr << "keys: ";
+        for (float k : firstHalfKey) {
+            std::cerr << k << " ";
+        }
+        std::cerr << std::endl;
+
+
+        std::cerr << "second half, key size: " << secondHalfKey.size() << " , ptr size: " << secondHalfPtr.size() << std::endl;
+        std::cerr << "keys: ";
+        for (float k : secondHalfKey) {
+            std::cerr << k << " ";
+        }
+        std::cerr << std::endl;
+        
+        Pointer internalNode1Ptr(parent);
+        Pointer internalNode2Ptr(newInternalNode);
+        float newParentKey = tempKeys[splitSize];
+        std::cerr << "new parent key: " << newParentKey << std::endl;
+
+        if (parent == root) {
+            std::shared_ptr<Node> newRoot = std::make_shared<Node>(false, size);
+            newRoot->keys.push_back(newParentKey);
+            newRoot->ptrs.push_back(internalNode1Ptr);
+            newRoot->ptrs.push_back(internalNode2Ptr);
+            root = newRoot;
+        } else {
+            std::cerr << root << std::endl;
+            InsertInternal(newParentKey, FindParent(root, parent), newInternalNode);
+        }
+    }
+}
+
+// can optimise by using key to search instead
+std::shared_ptr<Node> BPlusTree::FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child) {
+    std::cerr << "[FIND PARENT] root: " << root << std::endl;
+    std::cerr << "[FIND PARENT] child: " << child << std::endl;
+
+    if (root->isLeaf || std::static_pointer_cast<Node>(root->ptrs[0].ptr)->isLeaf)
+        return nullptr;
+
+    // get the max key?
+    for (int i = 0; i < root->ptrs.size(); i++) {
+        if (root->ptrs[i].ptr == child) {
+            return root;
+        } else {
+            std::shared_ptr<Node> parent = FindParent(std::static_pointer_cast<Node>(root->ptrs[i].ptr), child);
+            if (parent != nullptr)
+                return parent;
+        }
+    }
+    return nullptr;
+}
+
+std::shared_ptr<Node> BPlusTree::GetRoot() {
+    return root;
+}
+
+void BPlusTree::PrintNode(std::shared_ptr<Node> node) {
+    std::cout << "[";
+    for (int i = 0; i < node->keys.size(); i++) {
+        std::cout << node->ptrs[i].ptr << "|" << node->keys[i]<< "|";
+    }
+    std::cout << node->ptrs[node->ptrs.size()-1].ptr << "]" << std::endl;
+}
