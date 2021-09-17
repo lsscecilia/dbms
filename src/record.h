@@ -21,6 +21,10 @@ public:
     //Get record size
     int getRecordSize();
 
+    std::string toString();
+
+    Record(std::string tconst, float averageRating, int numVotes) : tconst(tconst), averageRating(averageRating), numVotes(numVotes) {};
+
 };
 
 #endif

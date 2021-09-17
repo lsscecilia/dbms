@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 
 #set project name
-project(project VERSION "1.0")
+project(dbms VERSION "1.0")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,9 +19,20 @@ add_executable(${PROJECT_NAME} ${SOURCE})
 include_directories( ${CMAKE_BINARY_DIR}/bin/ ) # Make sure it can be included...
 
 
-# #add lib
-# add_library(lib1
-#   src/lib1.cpp)
+#add lib
+add_library(bplustree
+  src/bplustree.cpp)
+
+add_library(storage 
+  src/storage.cpp
+  src/record.cpp
+  src/block.cpp)
+
+target_link_libraries(
+  dbms
+  bplustree
+  storage
+)
 
 # add_library(lib2
 # src/lib2.cpp)
@@ -64,12 +75,14 @@ if (project_build_tests)
 endif ()
 
 if (project_build_tests)
-  add_executable(project_test
+  add_executable(dbms_test
     test/main_test.cpp)
 
-  target_link_libraries(project_test
-    GTest::Main)
+  target_link_libraries(dbms_test
+    GTest::Main
+    bplustree
+    storage)
 
-  target_compile_definitions(project_test
+  target_compile_definitions(dbms_test
     PRIVATE TEST_DATA="${PROJECT_SOURCE_DIR}/test/data/")
 endif ()

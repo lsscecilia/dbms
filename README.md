@@ -3,6 +3,7 @@
 ## Build project
 
 ``` bash
+cmake -H. -Bbuild
 cd build && make
 ```
 
@@ -12,12 +13,12 @@ cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make
 ```
 ## Run project
 ```
-./build/bin/project 
+./build/bin/dbms
 ```
 
 Run test:
 ```
-./build/bin/project_test
+./build/bin/dbms_test
 ```
 ## Components
 

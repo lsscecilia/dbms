@@ -2,7 +2,7 @@
 #ifndef INCLUDE_GUARD
 #define INCLUDE_GUARD
 
-#define PROJECT_NAME "@PROJECT_NAME@"
-#define PROJECT_VER "@PROJECT_VERSION@"
+#define PROJECT_NAME "@DBMS@"
+#define PROJECT_VER "@0.1@"
 
 #endif

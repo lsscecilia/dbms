@@ -9,6 +9,10 @@ void Block::addRecord(Record record){
     records.push_back(record);
 }
 
+Record Block::getRecord(int offset) {
+    return records[offset];
+}
+
 int Block::getNumRecords(){
     return records.size();
 }
@@ -21,6 +25,9 @@ int Block::getBlockSize(){
     return blockSize;
 }
 
+std::string Block::toString(int offset) {
+    return records[offset].toString();
+}
 
 
 
