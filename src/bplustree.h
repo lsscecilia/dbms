@@ -41,6 +41,8 @@ class BPlusTree {
     void SplitLeaf();
     void PrintTree();
     void PrintNode(std::shared_ptr<Node> node);
+    void PrintRecords(std::shared_ptr<Node> node);
+    void PrintRecord(Pointer& ptr);
     std::shared_ptr<Node> GetRoot();
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);
 };

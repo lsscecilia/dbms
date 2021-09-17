@@ -7,6 +7,7 @@
 
 // void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<Record> record)
 void BPlusTree::InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uint16_t offset) {
+    std::cerr << "key: " << key << ", offset: " << offset << std::endl; 
     Pointer newPointer(blockPtr, offset);
     if (root == nullptr) {
         std::cerr << "root is nullptr, insert immediately" << std::endl;
@@ -86,7 +87,7 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uin
                     // insert at the end of the vector
                     tempKeys.push_back(key);
                     // insert ptr at the second last pos of the vector
-                    tempPtrs.insert(tempPtrs.begin() + tempPtrs.size()-1, newPointer);
+                    tempPtrs.insert(tempPtrs.begin() + tempPtrs.size(), newPointer);
                     break;
                 }
             }
@@ -300,4 +301,95 @@ void BPlusTree::PrintNode(std::shared_ptr<Node> node) {
         std::cout << node->ptrs[i].ptr << "|" << node->keys[i]<< "|";
     }
     std::cout << node->ptrs[node->ptrs.size()-1].ptr << "]" << std::endl;
+}
+
+void BPlusTree::PrintRecords(std::shared_ptr<Node> node) {
+    for (int i = 0; i < node->ptrs.size(); i++) {
+        PrintRecord(node->ptrs[i]);
+    }
+}
+
+void BPlusTree::PrintRecord(Pointer& ptr) {
+    std::shared_ptr<Block> block = std::static_pointer_cast<Block>(ptr.ptr);
+    std::cout << block->toString(ptr.offset);
+}
+
+void BPlusTree::FindRange(float begin, float end) {
+    if (end < begin) {
+        std::cerr << "range error" << std::endl;
+        return;
+    } else if (begin == end) {
+        Find(begin);
+        return;
+    }
+    std::cerr << "[BPLUSTREE::FindRange] " << begin << " to " << end << std::endl;
+    // check through key node, if begin < key node, go left, else go right to continue to find till the last element
+    std::shared_ptr<Node> itr = root;
+    bool itrIsLeaf = false;
+    while (!itrIsLeaf) {
+        for (int i = 0; i < itr->keys.size(); i++) {
+            if (begin < itr->keys[i]) {
+                itr = std::static_pointer_cast<Node>(itr->ptrs[i].ptr);
+                //std::cerr << "left, key: " << itr->keys[i] << std::endl;
+                break;
+            }
+            if (i == itr->keys.size() - 1) {
+                itr = std::static_pointer_cast<Node>(itr->ptrs[i+1].ptr);
+                //std::cerr << "right" << std::endl;
+                break;
+            }
+        }
+        if (itr->isLeaf) {
+            itrIsLeaf = true;
+            // std::cerr << "is leaf";
+        }
+        // std::cerr << "stuck in first for loop" << std::endl;
+    }
+
+    std::cerr << "while loop " << itr->keys[0] << std::endl;
+    // scan through ll of leaf level & display it?
+    bool terminate = false;
+    while (!terminate) {
+        // std::cerr << "biggest number: " <<itr->keys[itr->keys.size()-1] << " key size: " << itr->keys.size() << " ptr size: " << itr->ptrs.size() << std::endl;
+        // if (itr->keys[itr->keys.size()-1] > end) {
+        //     // print content in whole node
+        //     PrintRecords(itr);
+        //     std::cerr << "what is happening here" << std::endl;
+        //     if (itr->ptrs.size() > itr->keys.size()) {
+        //         std::cerr << "next" << std::endl;
+        //         itr = std::static_pointer_cast<Node>(itr->ptrs[itr->ptrs.size()-1].ptr);
+        //     } else {
+        //         // reach the end of the linked list
+        //         break;
+        //     }
+        // } else {
+            // search through the keys to find the end point
+        for (int i = 0; i < itr->keys.size(); i++) {
+            // std::cerr << "CHECK: " << itr->keys[i] << std::endl;
+            if (itr->keys[i] > end) {
+                // std::cerr << itr->keys[i] << ">"  << end << std::endl;
+                terminate = true;
+                break;
+            } else if (itr->keys[i] >= begin) {
+                // print content for key
+                // std::cerr << "check offset: " << itr->ptrs[i].offset << std::endl;
+                PrintRecord(itr->ptrs[i]);
+
+            }
+
+            if (i == itr->keys.size()-1 && itr->ptrs.size() > itr->keys.size()) {
+                //std::cerr << "next" << std::endl;
+                itr = std::static_pointer_cast<Node>(itr->ptrs[itr->ptrs.size()-1].ptr);
+                break;
+            } else if (i == itr->keys.size()-1) {
+                terminate = true;
+            }
+        }
+        
+        //std::cerr << "stuck in second for loop" << std::endl;
+    }
+}
+
+void BPlusTree::Find(float key) {
+    std::cerr << "find key: " << key << std::endl;
 }

@@ -20,6 +20,10 @@ struct Block
 
     //Get size of this block's content
     int getBlockSize();
+
+    Record getRecord(int offset);
+
+    std::string toString(int offset);
     
     Block(std::uint16_t maxRecord) : maxRecord(maxRecord) {};
 };
