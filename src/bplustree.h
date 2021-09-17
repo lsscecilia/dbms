@@ -1,6 +1,7 @@
 #include <memory>
 #include <vector>
 #include "block.h"
+#include<iostream>
 
 // custom pointer with address offset for easy access of Record in block
 struct Pointer {
