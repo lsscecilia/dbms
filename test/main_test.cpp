@@ -65,10 +65,6 @@ BPlusTree init() {
 	b8->addRecord(r15);
 	b8->addRecord(r16);
 
-    std::cerr << "b1 ptr: " << b1 << std::endl;
-    std::cerr << "b2 ptr: " << b2 << std::endl;
-
-
 	bplustree.InsertNode(1.00, b1, 0);
 	bplustree.InsertNode(2.00, b1, 1);
 
@@ -81,9 +77,7 @@ BPlusTree init() {
 	bplustree.InsertNode(7.00, b4, 0);
     bplustree.InsertNode(8.00, b4, 1);
 
-	std::cerr << "INSERT 9" << std::endl;
 	bplustree.InsertNode(9.00, b5, 0);
-	std::cerr << "INSERT 10" << std::endl;
     bplustree.InsertNode(10.00, b5, 1);
 
 	bplustree.InsertNode(11.00, b6, 0);
@@ -93,7 +87,6 @@ BPlusTree init() {
 	bplustree.InsertNode(14.00, b7, 1);
 
 	bplustree.InsertNode(15.00, b8, 0);
-	std::cerr << "INSERT 16" << std::endl;
 	bplustree.InsertNode(16.00, b8, 1);
 	return bplustree;
 }
@@ -102,7 +95,7 @@ TEST (BPlusTreeTest, insertion) {
 	BPlusTree bplustree = init();
 
 	std::shared_ptr<Node> root = bplustree.GetRoot();
-	std::cerr << "is root node leaf?" << root->isLeaf << std::endl;
+	// std::cerr << "is root node leaf?" << root->isLeaf << std::endl;
 	std::cerr << "keys: ";
 	for (float key : root->keys) {
 		std::cerr << key << " ";
