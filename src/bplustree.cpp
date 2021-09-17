@@ -373,9 +373,55 @@ void BPlusTree::FindRange(float begin, float end) {
 
 void BPlusTree::Find(float key) {
     std::cerr << "[BPlusTree::Find] find key: " << key << std::endl;
+        // empty tree, return
+    if (root == nullptr) {
+        std::cout << "B+ tree is empty." << std::endl;
+        return;
+    }
+    else {
+        std::shared_ptr<Node> traverseNode = root;
+        std::shared_ptr<Node> parentNode;
+        while (!traverseNode->isLeaf) {
+            // traverse tree to reach leaf node
+            parentNode = traverseNode;
+
+            for (int i = 0; i <traverseNode->keys.size(); i++) {
+                if (key < traverseNode->keys[i]) {
+                    // set traverseNode to child node if key to delete is less than traverse key
+                    // child node is left pointer of key
+                    traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i].ptr);
+                    break;
+                }
+                if (key == traverseNode->keys.size() - 1) {
+                    // key is larger than all keys in node
+                    // set traverseNode to last pointer
+                    traverseNode = std::static_pointer_cast<Node>(traverseNode->ptrs[i+1].ptr);
+                    break;
+                }
+            }
+        }
+
+        //leaf node for key is found
+        bool found = false;
+
+        for (int i = 0; i < traverseNode->keys.size(); i++) {
+            if (key == traverseNode->keys[i]) {
+                // key is found
+                found = true;
+                PrintRecord(traverseNode->ptrs[i]);
+                break;
+            }
+        }
+
+        if (!found){
+            // key does not exist in tree
+            std::cout << "Specified key: " << key << " to be deleted does not exist" << std::endl;
+            return;
+        }
+    }
 }
 
-int BPlusTree::DeleteNode(std::uint32_t key) {
+int BPlusTree::DeleteKey(std::uint32_t key) {
 
     int numNodesDeleted = 0;
 
@@ -385,7 +431,7 @@ int BPlusTree::DeleteNode(std::uint32_t key) {
         return numNodesDeleted;
     }
     else {
-        std::shared_ptr<Node> traverseNode = root;
+        std::shared_ptr<Node> traverseNode = root; // Cursor node to keep track of current node
         std::shared_ptr<Node> parentNode;
         int leftSibling, rightSibling;
         while (!traverseNode->isLeaf) {
@@ -413,7 +459,8 @@ int BPlusTree::DeleteNode(std::uint32_t key) {
         }
 
         // leaf node is found, now search if key exists
-        int deletePos = -1;
+
+        int deletePos = -1; // Position of key and pointer in leaf node
 
         for (int i = 0; i < traverseNode->keys.size(); i++) {
             if (key == traverseNode->keys[i]) {
@@ -432,18 +479,22 @@ int BPlusTree::DeleteNode(std::uint32_t key) {
         // delete the specified record
         // todo: function to delete record given the pointer??
 
-        // shift keys and pointers forward in the vector
-        for (int i = deletePos; i < traverseNode->keys.size() - 1; i++) {
-            traverseNode->keys[i] = traverseNode->keys[i + 1];
-            traverseNode->ptrs[i] = traverseNode->ptrs[i + 1];
-        }
+        // // shift keys and pointers forward in the vector
+        // for (int i = deletePos; i < traverseNode->keys.size() - 1; i++) {
+        //     traverseNode->keys[i] = traverseNode->keys[i + 1];
+        //     traverseNode->ptrs[i] = traverseNode->ptrs[i + 1];
+        // }
 
-        // shift last pointer forward
-        traverseNode->ptrs[traverseNode->ptrs.size() - 2] = traverseNode->ptrs[traverseNode->ptrs.size() - 1];
+        // // shift last pointer forward
+        // traverseNode->ptrs[traverseNode->ptrs.size() - 2] = traverseNode->ptrs[traverseNode->ptrs.size() - 1];
 
-        // delete last key and pointer in leaf node
-        traverseNode->keys.pop_back();
-        traverseNode->ptrs.pop_back();
+        // // delete last key and pointer in leaf node
+        // traverseNode->keys.pop_back();
+        // traverseNode->ptrs.pop_back();
+
+        //delete key and pointer at i-th position in leaf node
+        traverseNode->keys.erase(traverseNode->keys.begin() + deletePos);
+        traverseNode->ptrs.erase(traverseNode->ptrs.begin() + deletePos);
 
         // check if traverseNode is root node
         if (traverseNode == root) {
@@ -459,9 +510,104 @@ int BPlusTree::DeleteNode(std::uint32_t key) {
             return numNodesDeleted;
         }
 
+        // replace deleted key with check if deleted key exists in internal node, replace if so
+
         // check if the leaf has at least ⌊(n+1)/2⌋ keys
         if (traverseNode->keys.size() >= (size + 1)/2) {
+
+            // Minimum number of keys in leaf is satisfied
+            // todo update parent key!!
+            return numNodesDeleted;
+        }
+
+        // min. number of keys in leaf is not satisfied
+
+        // borrow from left sibling and check if left sibling exists
+        if (leftSibling >= 0){
+            std::shared_ptr<Node> leftSiblingNode = std::static_pointer_cast<Node>(parentNode->ptrs[leftSibling].ptr);
+
+            // Check if left sibling has extra keys
+            if (leftSiblingNode->keys.size() >= ((size + 1)/2) + 1) {
+                // insert left sibling's last key as first key of current node
+                int key = leftSiblingNode->keys[leftSiblingNode->keys.size() - 1];
+                traverseNode->keys.insert(traverseNode->keys.begin(), key);
+
+                // insert left sibling's largest key pointer as first pointer of current node
+                traverseNode->ptrs.insert(traverseNode->ptrs.begin(), leftSiblingNode->ptrs[leftSiblingNode->keys.size() - 1]);
+
+                // delete transferred key and pointer in left sibling
+                leftSiblingNode->keys.erase(leftSiblingNode->keys.begin() + (leftSiblingNode->keys.size() - 1));
+                leftSiblingNode->ptrs.erase(leftSiblingNode->ptrs.begin() + (leftSiblingNode->keys.size() - 1));
+
+                // update parent's key with first key of current node
+                parentNode->keys[leftSibling] = traverseNode->keys[0];
+                std::cout << "Borrowed key from left sibling" << std::endl;
+                return numNodesDeleted;
+            }
+        }
+
+        //borrow from right sibling since left sibling is useless and check if right sibling exists
+        if (rightSibling <= parentNode->keys.size()) {
+            std::shared_ptr<Node> rightSiblingNode = std::static_pointer_cast<Node>(parentNode->ptrs[rightSibling].ptr);
+
+            //check if right sibling has extra keys and
+            if (rightSiblingNode->keys.size() >= ((size + 1)/2) + 1) {
+                // insert right sibling's first key as last key of current node
+                traverseNode->keys.push_back(rightSiblingNode->keys[0]);
+
+                // insert right sibling's first pointer as second last pointer of current node
+                traverseNode->ptrs.insert(traverseNode->ptrs.begin() + (traverseNode->ptrs.size() - 1), rightSiblingNode->ptrs[0]);
+
+                // delete transferred key and pointer in the right sibling
+                rightSiblingNode->keys.erase(rightSiblingNode->keys.begin());
+                rightSiblingNode->ptrs.erase(rightSiblingNode->ptrs.begin());
+
+                // update parent's keys with first key of sibling node
+                parentNode->keys[rightSibling - 1] = rightSiblingNode->keys[0];
+                std::cout << "Borrowed key from right sibling" << std::endl;
+                return numNodesDeleted;
+            }
+        }
+
+        // Left and Right sibling nodes do not have enough nodes to borrow from
+        // Need to merge
+        if (leftSibling >= 0) {
+            // Left Sibling exists, merge with left sibling
+            std::shared_ptr<Node> leftSiblingNode = std::static_pointer_cast<Node>(parentNode->ptrs[leftSibling].ptr);
+
+            //merge left sibling with current node
+            for (int i = 0; i < traverseNode->keys.size(); i++) {
+                leftSiblingNode->keys.push_back(traverseNode->keys[i]);
+                leftSiblingNode->ptrs.push_back(traverseNode->ptrs[i]);
+            }
+
+            leftSiblingNode->ptrs.back() = traverseNode->ptrs.back();
+            numNodesDeleted++;
+            numNodesDeleted += RemoveInternal(parentNode->keys[leftSibling], parentNode, traverseNode);
+            std::cout << "Merged left sibling node" << std::endl;
+            return numNodesDeleted;
+        }
+
+        else {
+            // merge with right sibling
+            std::shared_ptr<Node> rightSiblingNode = std::static_pointer_cast<Node>(parentNode->ptrs[rightSibling].ptr);
+
+            //merge right sibling with current node
+            for (int i = 0; i < traverseNode->keys.size(); i++) {
+                traverseNode->keys.push_back(rightSiblingNode->keys[i]);
+                traverseNode->ptrs.push_back(rightSiblingNode->ptrs[i]);
+            }
+
+            traverseNode->ptrs.back() = rightSiblingNode->ptrs.back();
+            numNodesDeleted++;
+            numNodesDeleted += RemoveInternal(parentNode->keys[rightSibling - 1], parentNode, traverseNode);
+            std::cout << "Merged right sibling node" << std::endl;
+            return numNodesDeleted;
         }
     }
 }
+
+int RemoveInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child) {
+    // todo add removal of parent key from merging
+};
 
