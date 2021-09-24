@@ -36,7 +36,7 @@ class BPlusTree {
     void InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uint16_t offset);
     void InsertInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child);
     int DeleteKey(std::uint32_t key);
-    int RemoveInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child);
+    int RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> child);
     void Find(float key);
     void FindRange(float begin, float end);
     void SplitInternal();
@@ -46,5 +46,6 @@ class BPlusTree {
     void PrintRecords(std::shared_ptr<Node> node);
     void PrintRecord(Pointer& ptr);
     std::shared_ptr<Node> GetRoot();
+    void SetRoot(std::shared_ptr<Node> newRoot);
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);
 };

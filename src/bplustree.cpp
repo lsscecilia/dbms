@@ -293,6 +293,11 @@ std::shared_ptr<Node> BPlusTree::GetRoot() {
     return root;
 }
 
+void BPlusTree::SetRoot(std::shared_ptr<Node> newRoot){
+    this->root = newRoot;
+    return;
+}
+
 void BPlusTree::PrintNode(std::shared_ptr<Node> node) {
     std::cout << "[";
     for (int i = 0; i < node->keys.size(); i++) {
@@ -477,7 +482,7 @@ int BPlusTree::DeleteKey(std::uint32_t key) {
         }
 
         // delete the specified record
-        // todo: function to delete record given the pointer??
+        // TODO: function to delete record given the pointer??
 
         // // shift keys and pointers forward in the vector
         // for (int i = deletePos; i < traverseNode->keys.size() - 1; i++) {
@@ -516,7 +521,7 @@ int BPlusTree::DeleteKey(std::uint32_t key) {
         if (traverseNode->keys.size() >= (size + 1)/2) {
 
             // Minimum number of keys in leaf is satisfied
-            // todo update parent key!!
+            // TODO: update parent key!!
             return numNodesDeleted;
         }
 
@@ -607,7 +612,37 @@ int BPlusTree::DeleteKey(std::uint32_t key) {
     }
 }
 
-int RemoveInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child) {
-    // todo add removal of parent key from merging
-};
+// Removes the invalid key = key in the node pointed to by pointer = traverseNode
+int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> child) {
+    std::shared_ptr<Node> root = GetRoot();
+    int numNodesDeleted = 0;
+
+    // Check if key to be deleted is from root
+    if (traverseNode == root) {
+        // TODO: Check if this part makes sense, as senior code sets new root as ptrs[0] or ptrs[1]
+        // TODO: when it should be ptrs[0], since we always merge with left regardless and right node is redundant
+        // TODO: if so, remove condition check
+        if (traverseNode->keys.size() == 1){
+            // only one key exists and points to the child node
+            // we set the new root as the merged node
+            // since we merge all nodes to the left node (regardless if we merged with left sibling or with right sibling)
+            if (traverseNode->ptrs[1].ptr == child) {
+                // second pointer in root points to the child node
+                // means that a leaf node merged with its left sibling
+                this->root = traverseNode->ptrs[0].ptr;
+                std::cout << "Root Node Changed" << std::endl;
+                numNodesDeleted++;
+                return numNodesDeleted;
+            }
+            else if (traverseNode->ptrs[0].ptr == child) {
+                // first pointer in root points to the child node
+                // means that a leaf node was merged with its right sibling
+                this->root = traverseNode->ptrs[0].ptr;
+                std::cout << "Root Node Changed" << std::endl;
+                numNodesDeleted++;
+                return numNodesDeleted;
+            }
+        }
+    }
+}
 
