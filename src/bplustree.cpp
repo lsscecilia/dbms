@@ -515,7 +515,8 @@ int BPlusTree::DeleteKey(std::uint32_t key) {
             return numNodesDeleted;
         }
 
-        // replace deleted key with check if deleted key exists in internal node, replace if so
+        // replace deleted key with new key
+        // check if deleted key exists in internal node, replace if so
 
         // check if the leaf has at least ⌊(n+1)/2⌋ keys
         if (traverseNode->keys.size() >= (size + 1)/2) {
@@ -605,44 +606,69 @@ int BPlusTree::DeleteKey(std::uint32_t key) {
 
             traverseNode->ptrs.back() = rightSiblingNode->ptrs.back();
             numNodesDeleted++;
-            numNodesDeleted += RemoveInternal(parentNode->keys[rightSibling - 1], parentNode, traverseNode);
+            numNodesDeleted += RemoveInternal(parentNode->keys[rightSibling - 1], parentNode, rightSiblingNode);
             std::cout << "Merged right sibling node" << std::endl;
             return numNodesDeleted;
         }
     }
 }
 
-// Removes the invalid key = key in the node pointed to by pointer = traverseNode
-int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> child) {
+// Removes the invalid key = key in traverseNode
+// Removes the invalid pointer = deletedChild in traverseNode
+int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> deletedChild) {
     std::shared_ptr<Node> root = GetRoot();
     int numNodesDeleted = 0;
 
     // Check if key to be deleted is from root
     if (traverseNode == root) {
-        // TODO: Check if this part makes sense, as senior code sets new root as ptrs[0] or ptrs[1]
-        // TODO: when it should be ptrs[0], since we always merge with left regardless and right node is redundant
-        // TODO: if so, remove condition check
         if (traverseNode->keys.size() == 1){
             // only one key exists and points to the child node
             // we set the new root as the merged node
-            // since we merge all nodes to the left node (regardless if we merged with left sibling or with right sibling)
-            if (traverseNode->ptrs[1].ptr == child) {
-                // second pointer in root points to the child node
-                // means that a leaf node merged with its left sibling
+            if (traverseNode->ptrs[1].ptr == deletedChild) {
+                // second pointer in root points to the invalid leaf node
+                // set new root as the node pointed to by the left pointer (index 0)
                 this->root = traverseNode->ptrs[0].ptr;
                 std::cout << "Root Node Changed" << std::endl;
                 numNodesDeleted++;
                 return numNodesDeleted;
             }
-            else if (traverseNode->ptrs[0].ptr == child) {
-                // first pointer in root points to the child node
-                // means that a leaf node was merged with its right sibling
-                this->root = traverseNode->ptrs[0].ptr;
+            else if (traverseNode->ptrs[0].ptr == deletedChild) {
+                // first pointer in root points to the invalid node
+                // set new root as the node pointed to by the right pointer
+                this->root = traverseNode->ptrs[1].ptr;
                 std::cout << "Root Node Changed" << std::endl;
                 numNodesDeleted++;
                 return numNodesDeleted;
             }
         }
+    }
+
+    // Deleting key from parent node
+
+    // find the position of the key to be deleted in traverseNode (parent node of the deleted node)
+    int deletePos;
+    for (deletePos = 0; deletePos < traverseNode->keys.size(); deletePos++) {
+        if (traverseNode->keys[deletePos] == key) {
+            break;
+        }
+    }
+
+    // delete the key at the position found
+    traverseNode->keys.erase(traverseNode->keys.begin() + deletePos);
+
+    // find the position of the pointer to be deleted in traverseNode
+    for (deletePos = 0; deletePos < traverseNode->ptrs.size(); deletePos++) {
+        if (traverseNode->ptrs[deletePos].ptr == deletedChild) {
+            break;
+        }
+    }
+
+    // delete the pointer at the position found
+    traverseNode->ptrs.erase(traverseNode->ptrs.begin() + deletePos);
+
+    // check for underflow
+    if (traverseNode->keys.size() >= ((size + 1)/2) - 1){
+
     }
 }
 
