@@ -15,6 +15,8 @@ struct Block
     //Add a record to this block
     void addRecord(Record record);
 
+    void DeleteRecord(float key);
+
     //Get number of records in this block
     int getNumRecords();
 

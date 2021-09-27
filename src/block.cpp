@@ -9,6 +9,18 @@ void Block::addRecord(Record record){
     records.push_back(record);
 }
 
+void Block::DeleteRecord(float key) {
+    int deletePos;
+    for (deletePos = 0; deletePos < records.size(); deletePos++) {
+        if (records[deletePos].averageRating == key) {
+            break;
+        }
+    }
+
+    records.erase(records.begin() + deletePos);
+    std::cerr << "[Block::DeleteRecord] Delete record, key - " << key << std::endl;
+} 
+
 Record Block::getRecord(int offset) {
     return records[offset];
 }
