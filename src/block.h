@@ -15,13 +15,15 @@ struct Block
     //Add a record to this block
     void addRecord(Record record);
 
+    void DeleteRecord(float key);
+
     //Get number of records in this block
     int getNumRecords();
 
     //Get size of this block's content
     int getBlockSize();
 
-    Record getRecord(int offset);
+    Record getRecord(float key);
 
     std::string toString(int offset);
     
