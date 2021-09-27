@@ -486,7 +486,8 @@ int BPlusTree::DeleteKey(float key) {
 
         // delete the specified record
         // TODO: function to delete record given the pointer??
-
+        std::shared_ptr<Block> keyBlock = std::static_pointer_cast<Block>(traverseNode->ptrs[deletePos].ptr);
+        keyBlock->DeleteRecord(key);
         //delete key and pointer at i-th position in leaf node
         traverseNode->keys.erase(traverseNode->keys.begin() + deletePos);
         traverseNode->ptrs.erase(traverseNode->ptrs.begin() + deletePos);
