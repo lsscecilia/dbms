@@ -6,11 +6,7 @@
 // custom pointer with address offset for easy access of Record in block
 struct Pointer {
     std::shared_ptr<void> ptr;
-    std::uint16_t offset;
-    Pointer(std::shared_ptr<void> ptr, std::uint16_t offset) : ptr(ptr), offset(offset) {};
-    Pointer(std::shared_ptr<void> ptr) : ptr(ptr) {
-        offset = 0;
-    };
+    Pointer(std::shared_ptr<void> ptr) : ptr(ptr) {};
 };
 
 // non leaf node points to Node
@@ -44,7 +40,7 @@ class BPlusTree {
     void PrintTree();
     void PrintNode(std::shared_ptr<Node> node);
     void PrintRecords(std::shared_ptr<Node> node);
-    void PrintRecord(Pointer& ptr);
+    void PrintRecord(Pointer& ptr, float key);
     std::shared_ptr<Node> GetRoot();
     void SetRoot(std::shared_ptr<Node> newRoot);
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);

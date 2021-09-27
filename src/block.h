@@ -23,7 +23,7 @@ struct Block
     //Get size of this block's content
     int getBlockSize();
 
-    Record getRecord(int offset);
+    Record getRecord(float key);
 
     std::string toString(int offset);
     
