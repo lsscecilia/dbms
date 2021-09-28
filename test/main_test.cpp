@@ -68,33 +68,33 @@ BPlusTree initDeletion() {
 	b9->addRecord(r17);
 	b9->addRecord(r18);
 
-	bplustree.InsertNode(1.00, b1, 0);
-	bplustree.InsertNode(2.00, b1, 1);
+	bplustree.InsertNode(1.00, b1);
+	bplustree.InsertNode(2.00, b1);
 
-	bplustree.InsertNode(3.00, b2, 0);
-    bplustree.InsertNode(4.00, b2, 1);
+	bplustree.InsertNode(3.00, b2);
+    bplustree.InsertNode(4.00, b2);
 
-    bplustree.InsertNode(5.00, b3, 0);
-    bplustree.InsertNode(6.00, b3, 1);
+    bplustree.InsertNode(5.00, b3);
+    bplustree.InsertNode(6.00, b3);
  
-	bplustree.InsertNode(7.00, b4, 0);
-    bplustree.InsertNode(8.00, b4, 1);
+	bplustree.InsertNode(7.00, b4);
+    bplustree.InsertNode(8.00, b4);
 
-	bplustree.InsertNode(9.00, b5, 0);
-    bplustree.InsertNode(10.00, b5, 1);
+	bplustree.InsertNode(9.00, b5);
+    bplustree.InsertNode(10.00, b5);
 
-	bplustree.InsertNode(11.00, b6, 0);
-	bplustree.InsertNode(12.00, b6, 1);
+	bplustree.InsertNode(11.00, b6);
+	bplustree.InsertNode(12.00, b6);
 
-	bplustree.InsertNode(13.00, b7, 0);
-	bplustree.InsertNode(14.00, b7, 1);
+	bplustree.InsertNode(13.00, b7);
+	bplustree.InsertNode(14.00, b7);
 
-	bplustree.InsertNode(16.00, b8, 1);
+	bplustree.InsertNode(16.00, b8);
 
-	bplustree.InsertNode(17.00, b9, 0);
+	bplustree.InsertNode(17.00, b9);
 
-	bplustree.InsertNode(15.00, b8, 0);
-	bplustree.InsertNode(18.00, b9, 1);
+	bplustree.InsertNode(15.00, b8);
+	bplustree.InsertNode(18.00, b9);
 
 	return bplustree;
 }
@@ -163,31 +163,31 @@ BPlusTree init() {
 	b9->addRecord(r17);
 	b9->addRecord(r18);
 
-	bplustree.InsertNode(1.00, b1, 0);
-	bplustree.InsertNode(2.00, b1, 1);
+	bplustree.InsertNode(1.00, b1);
+	bplustree.InsertNode(2.00, b1);
 
-	bplustree.InsertNode(3.00, b2, 0);
-    bplustree.InsertNode(4.00, b2, 1);
+	bplustree.InsertNode(3.00, b2);
+    bplustree.InsertNode(4.00, b2);
 
-    bplustree.InsertNode(5.00, b3, 0);
-    bplustree.InsertNode(6.00, b3, 1);
+    bplustree.InsertNode(5.00, b3);
+    bplustree.InsertNode(6.00, b3);
  
-	bplustree.InsertNode(7.00, b4, 0);
-    bplustree.InsertNode(8.00, b4, 1);
+	bplustree.InsertNode(7.00, b4);
+    bplustree.InsertNode(8.00, b4);
 
-	bplustree.InsertNode(9.00, b5, 0);
-    bplustree.InsertNode(10.00, b5, 1);
+	bplustree.InsertNode(9.00, b5);
+    bplustree.InsertNode(10.00, b5);
 
-	bplustree.InsertNode(11.00, b6, 0);
-	bplustree.InsertNode(12.00, b6, 1);
+	bplustree.InsertNode(11.00, b6);
+	bplustree.InsertNode(12.00, b6);
 
-	bplustree.InsertNode(13.00, b7, 0);
-	bplustree.InsertNode(14.00, b7, 1);
+	bplustree.InsertNode(13.00, b7);
+	bplustree.InsertNode(14.00, b7);
 
-	bplustree.InsertNode(15.00, b8, 0);
-	bplustree.InsertNode(16.00, b8, 1);
+	bplustree.InsertNode(15.00, b8);
+	bplustree.InsertNode(16.00, b8);
 
-	bplustree.InsertNode(17.00, b9, 0);
+	bplustree.InsertNode(17.00, b9);
 
 	return bplustree;
 }
@@ -767,6 +767,48 @@ TEST (BPlusTree, findExist) {
 TEST (BPlusTree, finddoesNotExist) {
 	BPlusTree bplustree = init();
 	bplustree.Find(100);
+}
+
+TEST (BPlusTree, insertDuplicate) {
+	BPlusTree bplustree(3);
+	
+	Record r1("r1", 1.00, 1);
+	Record r2("r2", 2.00, 1);
+	Record r3("r3", 3.00, 1);
+	Record r4("r4", 4.00, 1);
+
+	std::shared_ptr<Block> b1 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b2 = std::make_shared<Block>(2);
+
+	b1->addRecord(r1);
+	b1->addRecord(r2);
+    
+    b2->addRecord(r3);
+	b2->addRecord(r4);
+
+	bplustree.InsertNode(1, b1);
+	bplustree.InsertNode(1, b1);
+
+	// bplustree.InsertNode(1, b2);
+    // bplustree.InsertNode(2, b2);dup
+
+
+	std::shared_ptr<Node> root = bplustree.GetRoot();
+	std::cerr << "test print node: " << std::endl;
+	bplustree.PrintNode(root);
+
+	// for (int i = 0; i < root->ptrs.size(); i++) {
+	// 	std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+	// 	bplustree.PrintNode(itr);
+	// 	// std::cerr << "child: " << std::endl;
+	// 	// for (int r = 0; r < itr->ptrs.size(); r++) {
+	// 	// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+	// 	// }
+	// 	std::cerr << "end child" << std::endl;
+	// }
+
+	bplustree.FindRange(1, 1);
+
 }
 
 int main(int argc, char** argv){

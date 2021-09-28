@@ -15,9 +15,7 @@
 using std::vector;
 using namespace std;
 
-int main()
-{
-
+int main() {
     int blockSize;
 
     //Read Input File
@@ -43,27 +41,32 @@ int main()
     Record r;
     int max_records_in_block = floor(blockSize/r.getRecordSize());
 
-	Block blk(max_records_in_block);
-    s.blocks.push_back(blk);
+	std::shared_ptr<Block> blockPtr = std::make_shared<Block>(max_records_in_block);
+    s.blocks.push_back(blockPtr);
     int blockCount = s.getNumBlocks()-1;
     cout << "init block count: " << blockCount << endl;
 
     // get parameter N for bplustree
     int sizeOfOtherDataInNode = sizeof(bool) + sizeof(uint32_t);
-    int sizeOfKey = sizeof(float) + sizeof(Pointer);
+    // int sizeOfKey = sizeof(float) + sizeof(Pointer);
+    int sizeOfKey = sizeof(float) + 4;
+
 
     cout << "size of other shit in node: " << sizeOfOtherDataInNode << endl;
     cout << "size of key: " << sizeOfKey << endl; 
 
-    int maxNumKeyInNode = floor((blockSize - sizeOfOtherDataInNode - sizeof(Pointer)) / sizeOfKey);
+    int maxNumKeyInNode = floor((blockSize - sizeOfOtherDataInNode - 4) / sizeOfKey);
+    //int maxNumKeyInNode = floor((blockSize - sizeOfOtherDataInNode - sizeof(Pointer)) / sizeOfKey);
+
     cout << "max num key in node: " << maxNumKeyInNode << endl;
 
     BPlusTree bplustree(maxNumKeyInNode);
 
     //Skip Header
     //getline(infile, row);
-    std::shared_ptr<Block> blockPtr;
     //For all lines in the file
+    int count = 0;
+
     while(getline(infile, row)) {
         vector <string> tokens;
         istringstream iss(row);
@@ -83,9 +86,9 @@ int main()
         //If there is space in current block, add record to this block else create a new block and and record to the new block
 
         //Max number of records in block shouldn't exceed floor of BLOCKSize / RECORD_SIZE
-        if(s.blocks[blockCount].getNumRecords() < max_records_in_block)
+        if(s.blocks[blockCount]->getNumRecords() < max_records_in_block)
         {
-            s.blocks[blockCount].addRecord(r);//push a record r to block b
+            s.blocks[blockCount]->addRecord(r);//push a record r to block b
             //cout << "block " << blockCount << " Num Records:" << s.blocks[blockCount].getNumRecords() << endl;
             //cout<< "Current Block Size: " << s.blocks[blockCount].getBlockSize() << endl;
         }
@@ -94,14 +97,19 @@ int main()
             //cout<< "Number Records " << s.blocks[blockCount].getNumRecords() << endl;
             //cout<< "Ending Block Size: " << s.blocks[blockCount].getBlockSize() << endl;
             blockCount++;//increment block counter
-            blockPtr = std::make_shared<Block>();
-            s.addBlock(*blockPtr.get());
-            s.blocks[blockCount].addRecord(r);//push a record r to new block b
+            std::shared_ptr<Block> blockPtr = std::make_shared<Block>(max_records_in_block);
+            //blockPtr = std::make_shared<Block>(max_records_in_block);
+            s.addBlock(blockPtr);
+            s.blocks[blockCount]->addRecord(r);//push a record r to new block b
+            // blockPtr = std::make_shared<Block>(s.blocks[blockCount]);
             //cout << "new_block " << blockCount << " Num Records:" << s.blocks[blockCount].getNumRecords() << endl;
         };
+        if (count%100000 == 0)
+            cout << "checkpoint: " << count << endl;
 
         // insert into bplus tree
-        // bplustree.InsertNode(r.numVotes, blockPtr);
+        bplustree.InsertNode(r.numVotes, blockPtr);
+        count++;
     }
 
     infile.close();//close the file after finish reading
@@ -111,34 +119,35 @@ int main()
     cout <<"Number of Blocks: " << s.getNumBlocks() << endl;
     cout <<"Size of Block: " << blockSize << " bytes" << endl;
     cout <<"Max Records in Block: " << max_records_in_block << " Records" << endl;
-    cout <<"Min Records in Block: " << s.blocks[s.getNumBlocks()-1].getNumRecords() << " Records" << endl;
+    cout <<"Min Records in Block: " << s.blocks[s.getNumBlocks()-1]->getNumRecords() << " Records" << endl;
     cout <<"Total Size of Storage: " << ((double)s.getStorageSize() / 1024000)<< " Mb" << endl;
     cout <<"--------------------------" << endl;
     cout <<"Building B+ Tree Index on Average Rating" << endl;
 
 
-    Pointer ptr;
-    float random = 10;
-    cout << "size of pointer: " << sizeof(ptr) << endl;
-    cout << "size of float: " << sizeof(random) << endl; 
-    cout << "bool: " << sizeof(bool) << endl;
-    cout << "uint32_t: " << sizeof(uint32_t) << endl;
+    // Pointer ptr;
+    // float random = 10;
+    // cout << "size of pointer: " << sizeof(ptr) << endl;
+    // cout << "size of float: " << sizeof(random) << endl; 
+    // cout << "bool: " << sizeof(bool) << endl;
+    // cout << "uint32_t: " << sizeof(uint32_t) << endl;
+    // cout << "end, where segmentation fault? " << endl;
 
-    int maxNumKeys =  floor((blockSize-4)/8); //Parameter N
-    int min_internal = floor(maxNumKeys/2);
-    int min_leaf = floor((maxNumKeys+1)/2);
+    // int maxNumKeys =  floor((blockSize-4)/8); //Parameter N
+    // int min_internal = floor(maxNumKeys/2);
+    // int min_leaf = floor((maxNumKeys+1)/2);
 
-    int num_levels = 2;
+    // int num_levels = 2;
 
-    for(int i = 1; i < 999; i++ ){
-        int max_records_indexed = pow(maxNumKeys,i)*maxNumKeys;
-        if(max_records_indexed >= s.getNumRecords()){
-            break;
+    // for(int i = 1; i < 999; i++ ){
+    //     int max_records_indexed = pow(maxNumKeys,i)*maxNumKeys;
+    //     if(max_records_indexed >= s.getNumRecords()){
+    //         break;
 
-        }else{
-            num_levels+=1;
-        }
-    }
+    //     }else{
+    //         num_levels+=1;
+    //     }
+    // }
 
 
 

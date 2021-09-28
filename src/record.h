@@ -24,7 +24,11 @@ public:
     std::string toString();
 
     Record(std::string tconst, float averageRating, int numVotes) : tconst(tconst), averageRating(averageRating), numVotes(numVotes) {};
-    Record() {}
+    Record() {
+        tconst = "";
+        averageRating = -1;
+        int numVotes = -1;
+    }
 };
 
 #endif

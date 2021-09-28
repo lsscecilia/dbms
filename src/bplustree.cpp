@@ -6,8 +6,8 @@
 // duplicated value..? should not happen right
 
 // void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<Record> record)
-void BPlusTree::InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uint16_t offset) {
-    std::cerr << "[BPlusTree::InsertNode] insert key: " << key << ", offset: " << offset << std::endl; 
+void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
+    // std::cerr << "[BPlusTree::InsertNode] insert key: " << key << std::endl; 
     Pointer newPointer(blockPtr);
     if (root == nullptr) {
         // std::cerr << "root is nullptr, insert immediately" << std::endl;
@@ -154,7 +154,7 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uin
 }
 
 void BPlusTree::InsertInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child) {
-    std::cerr << "[BPlusTree::InsertInternal] insert internal, key: " << key << std::endl;
+    // std::cerr << "[BPlusTree::InsertInternal] insert internal, key: " << key << std::endl;
     Pointer newPointer(child);
 
     // parent still have space
@@ -171,7 +171,7 @@ void BPlusTree::InsertInternal(float key, std::shared_ptr<Node> parent, std::sha
             }
         }
 
-        std::cerr << "[BPlusTree::InsertInternal] parent stil have space, insert pos: " << insertPos << std::endl;
+        // std::cerr << "[BPlusTree::InsertInternal] parent stil have space, insert pos: " << insertPos << std::endl;
 
         if (insertPos != -1) {
             // insert key in vector
@@ -204,7 +204,7 @@ void BPlusTree::InsertInternal(float key, std::shared_ptr<Node> parent, std::sha
                 break;
             }
         }
-        std::cerr << "[BPlusTree::InsertInternal] parent does not have space, insert pos: " << insertPos << std::endl;
+        // std::cerr << "[BPlusTree::InsertInternal] parent does not have space, insert pos: " << insertPos << std::endl;
         if (insertPos != -1) {
             // insert key in vector
             std::vector<float>::iterator keyInsertItr = tempKeys.begin() + insertPos;
@@ -271,7 +271,7 @@ void BPlusTree::InsertInternal(float key, std::shared_ptr<Node> parent, std::sha
 
 // can optimise by using key to search instead
 std::shared_ptr<Node> BPlusTree::FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child) {
-    std::cerr << "[BPlusTree::FindParent] root: " << root << ", child: " << child << std::endl;
+    // std::cerr << "[BPlusTree::FindParent] root: " << root << ", child: " << child << std::endl;
 
     if (root->isLeaf || std::static_pointer_cast<Node>(root->ptrs[0].ptr)->isLeaf)
         return nullptr;
@@ -322,14 +322,15 @@ void BPlusTree::FindRange(float begin, float end) {
     if (end < begin) {
         std::cerr << "[BPLUSTREE::FindRange] range error" << std::endl;
         return;
-    } else if (begin == end) {
-        Find(begin);
-        return;
     }
+    // } else if (begin == end) {
+    //     Find(begin);
+    //     return;
+    // }
     std::cerr << "[BPLUSTREE::FindRange] " << begin << " to " << end << std::endl;
     // check through key node, if begin < key node, go left, else go right to continue to find till the last element
     std::shared_ptr<Node> itr = root;
-    bool itrIsLeaf = false;
+    bool itrIsLeaf = root->isLeaf;
     while (!itrIsLeaf) {
         for (int i = 0; i < itr->keys.size(); i++) {
             if (begin < itr->keys[i]) {
@@ -349,17 +350,18 @@ void BPlusTree::FindRange(float begin, float end) {
         }
         // std::cerr << "stuck in first for loop" << std::endl;
     }
-
+    std::cerr << "go to leaf" << std::endl;
     // scan through ll of leaf level & display it?
     bool terminate = false;
     while (!terminate) {
         // search through the keys to find the end point
         for (int i = 0; i < itr->keys.size(); i++) {
             if (itr->keys[i] > end) {
-                // std::cerr << itr->keys[i] << ">"  << end << std::endl;
+                std::cerr << itr->keys[i] << ">"  << end << std::endl;
                 terminate = true;
                 break;
             } else if (itr->keys[i] >= begin) {
+                std::cerr << "+1" << std::endl;
                 // print content for key
                 // std::cerr << "check offset: " << itr->ptrs[i].offset << std::endl;
                 PrintRecord(itr->ptrs[i], itr->keys[i]);
@@ -428,7 +430,7 @@ void BPlusTree::Find(float key) {
 }
 
 int BPlusTree::DeleteKey(float key) {
-    std::cerr << "[BPlusTree::DeleteKey] Key deleted: " << key << std::endl;
+    // std::cerr << "[BPlusTree::DeleteKey] Key deleted: " << key << std::endl;
 
     int numNodesDeleted = 0;
 

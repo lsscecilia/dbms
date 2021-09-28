@@ -7,6 +7,7 @@
 struct Pointer {
     std::shared_ptr<void> ptr;
     Pointer(std::shared_ptr<void> ptr) : ptr(ptr) {};
+    Pointer() {}
 };
 
 // non leaf node points to Node
@@ -29,7 +30,10 @@ class BPlusTree {
         // isit by default already nullptr
         root = nullptr;
     };
-    void InsertNode(float key, std::shared_ptr<Block>& blockPtr, std::uint16_t offset);
+
+    ~BPlusTree() = default;
+
+    void InsertNode(float key, std::shared_ptr<Block> blockPtr);
     void InsertInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child);
     int DeleteKey(float key);
     int RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> childToDelete);

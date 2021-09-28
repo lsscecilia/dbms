@@ -28,6 +28,7 @@ struct Block
     std::string toString(int offset);
     
     Block(std::uint16_t maxRecord) : maxRecord(maxRecord) {};
+    Block() {}
 };
 
 #endif

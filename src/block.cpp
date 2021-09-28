@@ -12,7 +12,7 @@ void Block::addRecord(Record record){
 void Block::DeleteRecord(float key) {
     if (records.size() == 0) {
         std::cerr << "[Block::DeleteRecord] error, no record avaliable" << std::endl;
-        //return;
+        return;
     }
     int deletePos;
     for (deletePos = 0; deletePos < records.size(); deletePos++) {
