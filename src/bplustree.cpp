@@ -1,4 +1,5 @@
 #include <iostream>
+#include <queue>
 
 #include "bplustree.h"
 // movement of ptr value
@@ -7,7 +8,7 @@
 
 // void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<Record> record)
 void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
-    // std::cerr << "[BPlusTree::InsertNode] insert key: " << key << std::endl; 
+    std::cerr << "[BPlusTree::InsertNode] insert key: " << key << std::endl; 
     if (root == nullptr) {
         // std::cerr << "root is nullptr, insert immediately" << std::endl;
         // create new node
@@ -66,22 +67,25 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
 
             // deal with duplicate
             if (duplicate && insertPos != -1) {
+                std::cerr << "duplicate" << std::endl;
                 // insert into linkedlist
                 std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[insertPos].ptr);
-                // std::cerr << "insert ll size: " << ll->ptrs.size() << std::endl;
-                // std::cerr << "fuck u" << std::endl;
+                std::cerr << "insert ll size: " << ll->ptrs.size() << std::endl;
+                std::cerr << "next: " << ll->next << std::endl;
                 while (ll->next != nullptr) {
                     ll = ll->next;
-                    // std::cerr << "should nto happen " << std::endl;
+                    std::cerr << "should nto happen " << ll << std::endl;
+                    std::cerr << ".. " << (ll->next == nullptr) << std::endl;
                 }
+                // bug here, ptr pointer to idk whr
+                std::cerr << "ll: " << ll << std::endl; 
 
                 if (ll->haveSpace()) {
-                    // std::cerr << "why" << std::endl;
+                    // std::cerr << "ll still have space" << std::endl;
                     ll->AddPtr(blockPtr);
                 } else {
                     // create new ll
                     std::shared_ptr<LinkedList> newll = std::make_shared<LinkedList>(llSize, blockPtr);
-                    // std::cerr << "fuck u" << key << std::endl;
                     ll->next = newll;
                 }
             } else if (insertPos != -1) {
@@ -174,7 +178,6 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
     
                 std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
                 // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
-                // std::cerr << "fuck u" << key << std::endl;
                 Pointer llPointer(ll);
                 tempPtrs.insert(ptrInsertItr, llPointer);
             }

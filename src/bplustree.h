@@ -8,7 +8,7 @@ struct Pointer {
     std::shared_ptr<void> ptr;
     Pointer(std::shared_ptr<void> ptr) : ptr(ptr) {};
     Pointer() {
-        ptr = nullptr;
+        ptr = std::shared_ptr<void>(nullptr);
     }
 };
 
