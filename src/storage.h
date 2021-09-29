@@ -3,6 +3,7 @@
 
 #include "block.h"
 #include <vector>
+#include <memory>
 
 /*
 Singleton structure representing the disk storage of a database system.

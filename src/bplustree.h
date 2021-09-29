@@ -7,7 +7,30 @@
 struct Pointer {
     std::shared_ptr<void> ptr;
     Pointer(std::shared_ptr<void> ptr) : ptr(ptr) {};
-    Pointer() {}
+    Pointer() {
+        ptr = nullptr;
+    }
+};
+
+struct LinkedList {
+    int maxSize;
+    std::vector<std::shared_ptr<Block>> ptrs;
+    std::shared_ptr<LinkedList> next;
+
+    LinkedList(int maxSize, std::shared_ptr<Block> ptr) : maxSize(maxSize){
+        ptrs.push_back(ptr);
+        next = std::shared_ptr<LinkedList>(nullptr);
+    }
+
+    void AddPtr(std::shared_ptr<Block> ptr) {
+        ptrs.push_back(ptr);
+    }
+    bool haveSpace() {
+        if (ptrs.size() < maxSize) {
+            return true;
+        }
+        return false;
+    }
 };
 
 // non leaf node points to Node
@@ -24,9 +47,11 @@ struct Node {
 class BPlusTree {
     std::shared_ptr<Node> root;
     std::uint32_t size;
+    std::uint32_t llSize;
     
     public:
-    BPlusTree(std::uint32_t size) : size(size) {
+    // todo: take in linkedlist size
+    BPlusTree(std::uint32_t size, std::uint32_t llSize) : size(size), llSize(llSize) {
         // isit by default already nullptr
         root = nullptr;
     };
@@ -44,7 +69,7 @@ class BPlusTree {
     void PrintTree();
     void PrintNode(std::shared_ptr<Node> node);
     void PrintRecords(std::shared_ptr<Node> node);
-    void PrintRecord(Pointer& ptr, float key);
+    void PrintRecordInLL(Pointer& ptr, float key);
     std::shared_ptr<Node> GetRoot();
     void SetRoot(std::shared_ptr<Node> newRoot);
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);
