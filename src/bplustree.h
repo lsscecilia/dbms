@@ -5,7 +5,7 @@
 
 struct LinkedList {
     int maxSize;
-    std::vector<std::unique _ptr<Block>> ptrs;
+    std::vector<std::shared_ptr<Block>> ptrs;
     std::shared_ptr<LinkedList> next;
     bool last;
 
