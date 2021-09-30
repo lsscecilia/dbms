@@ -3,18 +3,9 @@
 #include "block.h"
 #include<iostream>
 
-// custom pointer with address offset for easy access of Record in block
-struct Pointer {
-    std::shared_ptr<void> ptr;
-    Pointer(std::shared_ptr<void> ptr) : ptr(ptr) {};
-    Pointer() {
-        ptr = std::shared_ptr<void>(nullptr);
-    }
-};
-
 struct LinkedList {
     int maxSize;
-    std::vector<std::shared_ptr<Block>> ptrs;
+    std::vector<std::unique _ptr<Block>> ptrs;
     std::shared_ptr<LinkedList> next;
     bool last;
 
@@ -26,7 +17,7 @@ struct LinkedList {
     }
 
     void AddPtr(std::shared_ptr<Block> ptr) {
-        ptrs.push_back(ptr);
+        ptrs.push_back(std::move(ptr));
     }
     bool haveSpace() {
         if (ptrs.size() < maxSize) {
@@ -39,7 +30,7 @@ struct LinkedList {
 // non leaf node points to Node
 // leaf node points to block
 struct Node {
-    std::vector<Pointer> ptrs;
+    std::vector<std::shared_ptr<void>> ptrs;
     std::vector<float> keys;
     bool isLeaf;
     std::uint32_t size;
@@ -72,7 +63,7 @@ class BPlusTree {
     void PrintTree();
     void PrintNode(std::shared_ptr<Node> node);
     void PrintRecords(std::shared_ptr<Node> node);
-    void PrintRecordInLL(Pointer& ptr, float key);
+    void PrintRecordInLL(std::shared_ptr<void> ptr, float key);
     std::shared_ptr<Node> GetRoot();
     void SetRoot(std::shared_ptr<Node> newRoot);
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);

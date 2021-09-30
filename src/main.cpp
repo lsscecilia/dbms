@@ -47,6 +47,8 @@ int main() {
     //Read Input File
     std::ifstream infile;
     infile.open("../data/data.tsv");
+
+    // infile.open("../data/data.tsv");
     if (!infile) {
         std::cout << "Error in reading the file" << std::endl; //show error if can't read file
         exit(1);
@@ -88,10 +90,11 @@ int main() {
         }
 
         bplustree.InsertNode(newRecord.numVotes, blockPtr);
-        if (count == 10000)
-            break;
+        // if (count == 1000)
+        //     break;
         count++;
-        std::cerr << count;
+        // if (count%100000 == 0)
+        std::cerr << count << std::endl;;
     }
 
     infile.close();     // close file
