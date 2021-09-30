@@ -13,10 +13,10 @@ holds multiple blocks in memory, where each blocks holds multiple records.
 struct Storage
 {
     //Blocks in this record
-    std::vector <std::shared_ptr<Block>> blocks;
+    std::vector <Block> blocks;
 
     //Add a block
-    void addBlock(std::shared_ptr<Block> block);
+    void addBlock(Block block);
 
     //Get number of blocks
     int getNumBlocks();
