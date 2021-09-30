@@ -205,7 +205,7 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
 
             // qn, is the splitting correct...?
             std::size_t splitSize = (tempKeys.size() + 1)/2;
-            std::vector<float> firstHalfKey(tempKeys.cbegin(), tempKeys.begin() + splitSize);
+            std::vector<float> firstHalfKey(tempKeys.cbegin(), tempKeys.cbegin() + splitSize);
             std::vector<float> secondHalfKey(tempKeys.cbegin() + splitSize, tempKeys.cend());
 
             // std::cerr << "first half key: " << firstHalfKey.size() << std::endl;
@@ -316,7 +316,7 @@ void BPlusTree::InsertInternal(float key, std::shared_ptr<Node> parent, std::sha
         // split temp key & ptr
         std::size_t splitSize = (tempKeys.size() + 1)/2;
         // std::cerr << "split size :" << splitSize  << std::endl;
-        std::vector<float> firstHalfKey(tempKeys.cbegin(), tempKeys.begin() + splitSize);
+        std::vector<float> firstHalfKey(tempKeys.cbegin(), tempKeys.cbegin() + splitSize);
         // +1 becuase for the second half dont need the first key
         std::vector<float> secondHalfKey(tempKeys.cbegin() + splitSize + 1, tempKeys.cend());
 
