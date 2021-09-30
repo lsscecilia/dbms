@@ -82,13 +82,13 @@ int main() {
         } else {
             Block newBlock(maxRecordInBlock);
             newBlock.addRecord(newRecord);
-            blockPtr = std::make_shared<Block>(std::move(newBlock));
+            blockPtr = std::make_shared<Block>(newBlock);
             storage.addBlock(blockPtr);
             lastBlockIndex++;
         }
 
         bplustree.InsertNode(newRecord.numVotes, blockPtr);
-        if (count == 1000)
+        if (count == 10000)
             break;
         count++;
         std::cerr << count;
@@ -108,6 +108,8 @@ int main() {
 
     std::cout << "find records with numVotes = 500" << std::endl;
     bplustree.FindRange(22, 22);
+
+    bplustree.FindRange(18,18);
 
     std::cout << "program end" << std::endl;
 }

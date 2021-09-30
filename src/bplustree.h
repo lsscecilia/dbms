@@ -16,10 +16,13 @@ struct LinkedList {
     int maxSize;
     std::vector<std::shared_ptr<Block>> ptrs;
     std::shared_ptr<LinkedList> next;
+    bool last;
 
     LinkedList(int maxSize, std::shared_ptr<Block> ptr) : maxSize(maxSize){
         ptrs.push_back(ptr);
         next = std::shared_ptr<LinkedList>(nullptr);
+        // std::cerr << "init next: " << next << std::endl;
+        last = true;
     }
 
     void AddPtr(std::shared_ptr<Block> ptr) {
