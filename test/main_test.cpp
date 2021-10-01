@@ -5,7 +5,7 @@
 #include "../src/bplustree.h"
 
 BPlusTree initDuplicatedTree() {
-	BPlusTree bplustree(3, 5);
+	BPlusTree bplustree(3);
 	
 	Record r1("r1", 1.00, 1);
 	Record r2("r2", 2.00, 2);
@@ -112,7 +112,7 @@ BPlusTree initDuplicatedTree() {
 }
 
 BPlusTree initDeletion() {
-	BPlusTree bplustree(3, 5);
+	BPlusTree bplustree(3);
 	
 	Record r1("r1", 1.00, 1);
 	Record r2("r2", 2.00, 2);
@@ -207,7 +207,7 @@ BPlusTree initDeletion() {
 }
 
 BPlusTree init() {
-	BPlusTree bplustree(3, 5);
+	BPlusTree bplustree(3);
 	
 	// void Record::setRecord(string tconst_, float averageRating_, int numVotes_)
 	Record r1("r1", 1.00, 1);
@@ -445,7 +445,7 @@ TEST (BPlusTreeTest, linkLeafLevel) {
 }
 
 TEST (BPlusTree, insertDuplicate) {
-	BPlusTree bplustree(3, 5);
+	BPlusTree bplustree(3);
 	
 	Record r1("r1", 1.00, 1);
 	Record r2("r2", 2.00, 1);

@@ -388,7 +388,7 @@ void BPlusTree::PrintNode(std::shared_ptr<Node> node) {
 }
 
 // for leaf node
-void BPlusTree::PrintRecords(std::shared_ptr<Node> node) {
+void BPlusTree::PrintRecordsInNode(std::shared_ptr<Node> node) {
     for (int i = 0; i < node->ptrs.size(); i++) {
         PrintRecordInLL(node->ptrs[i], node->keys[i]);
     }
@@ -436,14 +436,15 @@ std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>
         std::cout << "B+ Tree is empty" << std::endl;
         return {};
     }
-
+    int numPrintNodes = 1;
     int numIOForNodes = 1;
     bool itrIsLeaf = root->isLeaf;
 
     while (!itrIsLeaf) {
-        if (numIOForNodes <= 5) {
+        if (numPrintNodes <= 5) {
             std::cout << "Content in node accessed: ";
             PrintNodeWithoutPtr(itr);
+            numPrintNodes++;
         }
         for (int i = 0; i < itr->keys.size(); i++) {
             if (begin < itr->keys[i]) {
@@ -482,6 +483,11 @@ std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>
             exit(0);
         } else {
             keySize = itr->keys.size();
+        }
+        if (numPrintNodes <= 5) {
+            std::cout << "Content in node accessed: ";
+            PrintNodeWithoutPtr(itr);
+            numPrintNodes++;
         }
         for (int i = 0; i < keySize; i++) {
             // std::cerr << "in for loop " << itr->keys.size()  << std::endl;

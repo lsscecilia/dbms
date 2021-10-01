@@ -21,7 +21,7 @@ void getAverageRating(std::vector<std::pair<float, std::shared_ptr<std::vector<s
             std::shared_ptr<Block> keyBlk = keyBlks.second->at(i);
             if (printBlock) {
                 blockForPrint++;
-                if (blockForPrint > 5) {
+                if (blockForPrint >= 5) {
                     printBlock = false;
                 }
                 std::cout << "Content in block accessed: ";
@@ -60,15 +60,14 @@ int main() {
    int maxRecordInBlock = floor(blockSize/sizeof(Record));
 
     int sizeOfOtherDataInNode = sizeof(bool) + sizeof(uint32_t);
-    int sizeOfKey = sizeof(float) + 4;
+    int sizeOfKey = sizeof(float) + 4;    // 4 is for the extra ptr
     int maxNumKeyInNode = floor((blockSize - sizeOfOtherDataInNode - 4) / sizeOfKey);
 
-    int numPtrInLL = floor(blockSize - sizeof(int) - 4/4);
     std::cout <<"-----------------------------------------" << std::endl;
     std::cout << "Max records in a block: " << maxRecordInBlock << std::endl;
     std::cout << "Max key in a B+ tree node: " << maxNumKeyInNode << std::endl;
-    std::cout << "Max ptr in linkedlist: " << numPtrInLL << std::endl;
     std::cout <<"-----------------------------------------\n" << std::endl;
+
     // init storage
     Storage storage;
     Block initBlock(maxRecordInBlock);
@@ -77,7 +76,7 @@ int main() {
     int lastBlockIndex = storage.getNumBlocks() - 1;
 
     // init bplustree
-    BPlusTree bplustree(maxNumKeyInNode, numPtrInLL);
+    BPlusTree bplustree(maxNumKeyInNode);
 
     //Read Input File
     std::ifstream infile;
@@ -94,7 +93,6 @@ int main() {
 
     // process data line by line
     std::string line;
-    int count = 0;
 
     getline(infile, line);     // skip header
 
@@ -128,11 +126,6 @@ int main() {
         }
 
         bplustree.InsertNode(newRecord.numVotes, blockPtr);
-        // if (count == 100000)
-        //     break;
-        count++;
-        // if (count%100000 == 0)
-        // std::cerr << count << std::endl;;
     }
 
     infile.close();     // close file
@@ -164,18 +157,10 @@ int main() {
     getAverageRating(find30kTo40k);
     std::cout << std::endl;
 
-    std::cout <<"Experiment 5: Delete records with numVotes = 100" << std::endl;
+    std::cout <<"Experiment 5: Delete records with numVotes = 1000" << std::endl;
     int numNodeDeleted = bplustree.DeleteKey(1000);
     std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
     bplustree.PrintStats();
-
-
-    // std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> test = bplustree.FindRange(32069, 40000);
-    // getAverageRating(test);
-
-    
-
-    // bplustree.FindRange(1000, 1000);
 
     std::cout << "program end" << std::endl;
 }
