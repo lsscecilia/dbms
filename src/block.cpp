@@ -65,8 +65,12 @@ int Block::getBlockSize(){
     return blockSize;
 }
 
-std::string Block::toString(int offset) {
-    return records[offset].toString();
+void Block::toString() {
+    std::cout << "Content of block: ";
+    for (Record r : records) {
+        std::cout << r.tconst << " ,";
+    }
+    std::cout << std::endl;
 }
 
 

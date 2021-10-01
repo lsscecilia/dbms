@@ -61,6 +61,7 @@ class BPlusTree {
     void SplitLeaf();
     void PrintTree();
     void PrintNode(std::shared_ptr<Node> node);
+    void PrintNodeWithoutPtr(std::shared_ptr<Node> node);
     void PrintRecords(std::shared_ptr<Node> node);
     void PrintRecordInLL(std::shared_ptr<void> ptr, float key);
     std::shared_ptr<Node> GetRoot();

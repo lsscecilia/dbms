@@ -441,6 +441,9 @@ std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>
     bool itrIsLeaf = root->isLeaf;
 
     while (!itrIsLeaf) {
+        if (numIOForNodes <= 5) {
+            PrintNodeWithoutPtr(itr);
+        }
         for (int i = 0; i < itr->keys.size(); i++) {
             if (begin < itr->keys[i]) {
                 itr = std::static_pointer_cast<Node>(itr->ptrs[i]);
@@ -909,4 +912,15 @@ void BPlusTree::PrintStats() {
     std::cout << "Content of 1st child node: " << std::endl;
     PrintNode(std::static_pointer_cast<Node>(root->ptrs[0]));
     std::cout << "----------------------------------------------" << std::endl;
+}
+
+void BPlusTree::PrintNodeWithoutPtr(std::shared_ptr<Node> node) {
+    std::cout << "[";
+    for (int i = 0; i < node->keys.size(); i++) {
+        std::cout << node->keys[i];
+        if (i != node->keys.size() - 1) {
+            std::cout << " | ";
+        }
+    }
+    std::cout << "]" << std::endl;
 }

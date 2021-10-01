@@ -12,9 +12,21 @@ void getAverageRating(std::vector<std::pair<float, std::shared_ptr<std::vector<s
     double totalRatings = 0;
     int totalRecords = 0;
     int numIOForDataBlocks = 0;
+
+    int blockForPrint = 0;
+    bool printBlock = true;
+
     for (std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>& keyBlks : blkPtrs) {
         for (int i = 0; i < keyBlks.second->size(); i++) {
             std::shared_ptr<Block> keyBlk = keyBlks.second->at(i);
+            if (printBlock) {
+                blockForPrint++;
+                if (blockForPrint > 5) {
+                    printBlock = false;
+                }
+                keyBlk->toString();
+            }
+
             std::vector<Record> records = keyBlk->getRecord(keyBlks.first);
             for (Record& r : records) {
                 totalRatings += r.averageRating;
@@ -146,12 +158,12 @@ int main() {
 
     bplustree.PrintStats();
 
-    int numNodeDeleted = bplustree.DeleteKey(1000);
+    // int numNodeDeleted = bplustree.DeleteKey(1000);
 
-    std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
-    bplustree.PrintStats();
+    // std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
+    // bplustree.PrintStats();
 
-    bplustree.FindRange(1000, 1000);
+    // bplustree.FindRange(1000, 1000);
 
     std::cout << "program end" << std::endl;
 }

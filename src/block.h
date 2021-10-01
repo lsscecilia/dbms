@@ -25,7 +25,7 @@ struct Block
 
     std::vector<Record> getRecord(float key);
 
-    std::string toString(int offset);
+    void toString();
 
     bool haveSpace() {
         if (records.size() < maxRecord)
