@@ -39,12 +39,14 @@ class BPlusTree {
     std::shared_ptr<Node> root;
     std::uint32_t size;
     std::uint32_t llSize;
+    int numNodes;
     
     public:
     // todo: take in linkedlist size
     BPlusTree(std::uint32_t size, std::uint32_t llSize) : size(size), llSize(llSize) {
         // isit by default already nullptr
         root = nullptr;
+        numNodes = 0;
     };
 
     ~BPlusTree() = default;
@@ -64,4 +66,11 @@ class BPlusTree {
     std::shared_ptr<Node> GetRoot();
     void SetRoot(std::shared_ptr<Node> newRoot);
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);
+    int GetNumNodes() {
+        return numNodes;
+    }
+
+    int GetHeight();
+
+    void PrintStats();
 };

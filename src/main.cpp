@@ -114,5 +114,7 @@ int main() {
 
     bplustree.FindRange(18,18);
 
+    bplustree.PrintStats();
+
     std::cout << "program end" << std::endl;
 }
