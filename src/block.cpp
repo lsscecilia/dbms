@@ -18,11 +18,11 @@ void Block::DeleteRecord(float key) {
     for (int i = records.size()-1; i >= 0; i--) {
         if (records[i].numVotes == key) {
             // deletePos.push_back(i);
-            std::cerr << "to delete: " << records[i].tconst << ", pos: " << i << std::endl;
+            // std::cerr << "to delete: " << records[i].tconst << ", pos: " << i << std::endl;
             records.erase(records.begin() + i);
         }
     }
-    std::cerr << "num records to delete from this block: " << deletePos.size() << std::endl;
+    // std::cerr << "num records to delete from this block: " << deletePos.size() << std::endl;
     // std::cerr << deletePos[0] << std::endl;
 
     // // delete from behind, so index will not change for front
@@ -33,11 +33,11 @@ void Block::DeleteRecord(float key) {
     // }
     
     // comment out for actual code
-    if (records.size() > 0) {
-        std::cerr << "(" << records[0].tconst << ")" << std::endl;
-    } else {
-        std::cerr << std::endl;
-    }
+    // if (records.size() > 0) {
+    //     std::cerr << "(" << records[0].tconst << ")" << std::endl;
+    // } else {
+    //     std::cerr << std::endl;
+    // }
 } 
 
 std::vector<Record> Block::getRecord(float key) {
@@ -66,7 +66,6 @@ int Block::getBlockSize(){
 }
 
 void Block::toString() {
-    std::cout << "Content of block: ";
     for (Record r : records) {
         std::cout << r.tconst << " ,";
     }

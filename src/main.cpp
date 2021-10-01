@@ -24,6 +24,7 @@ void getAverageRating(std::vector<std::pair<float, std::shared_ptr<std::vector<s
                 if (blockForPrint > 5) {
                     printBlock = false;
                 }
+                std::cout << "Content in block accessed: ";
                 keyBlk->toString();
             }
 
@@ -48,7 +49,7 @@ int main() {
     int blockSize;
     std::cout << "Enter Block Size" << std::endl;
     std::cin >> blockSize;
-    std::cout << "Building Storage with Block Size of " << blockSize << " bytes" <<  std::endl;
+    std::cout << "Building Storage with Block Size of " << blockSize << " bytes\n" <<  std::endl;
 
     /*
     1. max record in a block
@@ -63,11 +64,11 @@ int main() {
     int maxNumKeyInNode = floor((blockSize - sizeOfOtherDataInNode - 4) / sizeOfKey);
 
     int numPtrInLL = floor(blockSize - sizeof(int) - 4/4);
-
+    std::cout <<"-----------------------------------------" << std::endl;
     std::cout << "Max records in a block: " << maxRecordInBlock << std::endl;
     std::cout << "Max key in a B+ tree node: " << maxNumKeyInNode << std::endl;
     std::cout << "Max ptr in linkedlist: " << numPtrInLL << std::endl;
-
+    std::cout <<"-----------------------------------------\n" << std::endl;
     // init storage
     Storage storage;
     Block initBlock(maxRecordInBlock);
@@ -81,11 +82,14 @@ int main() {
     //Read Input File
     std::ifstream infile;
     infile.open("../data/data.tsv");
+    std::cout << "Reading file... " << std::endl;
 
     // infile.open("../data/data.tsv");
     if (!infile) {
         std::cout << "Error in reading the file" << std::endl; //show error if can't read file
         exit(1);
+    } else {
+        std::cout << "File sucessfully opened, processing file ..." << std::endl;
     }
 
     // process data line by line
@@ -128,11 +132,15 @@ int main() {
         //     break;
         count++;
         // if (count%100000 == 0)
-        std::cerr << count << std::endl;;
+        // std::cerr << count << std::endl;;
     }
 
     infile.close();     // close file
-    std::cout <<"--------------------------" << std::endl;
+    
+    std::cout << "Processing done... \n" << std::endl;
+
+    std::cout <<"Experiment 1" << std::endl; 
+    std::cout <<"---------- Storage Statistic ------------" << std::endl;
     std::cout <<"Number of Records: " << storage.getNumRecords() << std::endl; //output the final number of blocks for a given block size
     std::cout <<"Size of Record: " << sizeof(Record) << " bytes" << std::endl;
     std::cout <<"Number of Blocks: " << storage.getNumBlocks() << std::endl;
@@ -140,28 +148,32 @@ int main() {
     std::cout <<"Max Records in Block: " << maxRecordInBlock << " Records" << std::endl;
     std::cout <<"Min Records in Block: " << storage.blocks[storage.getNumBlocks()-1]->getNumRecords() << " Records" << std::endl;
     std::cout <<"Total Size of Storage: " << ((double)storage.getStorageSize() / 1024000)<< " Mb" << std::endl;
-    std::cout <<"--------------------------" << std::endl;
+    std::cout <<"-----------------------------------------\n" << std::endl;
 
+    std::cout <<"Experiment 2: After insertion of data into B+ tree: " << std::endl;
+    bplustree.PrintStats();
+    std::cout << std::endl;
 
-    std::cout << "find records with numVotes = 500" << std::endl;
-    bplustree.FindRange(22, 22);
-
+    std::cout <<"Experiment 3: find records with numVotes = 500" << std::endl; 
     std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find500 = bplustree.FindRange(500, 500);
     getAverageRating(find500);
+    std::cout << std::endl;
 
+    std::cout <<"Experiment 4: find records with numVotes from 30,000 to 40,000" << std::endl; 
     std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find30kTo40k = bplustree.FindRange(30000, 40000);
     getAverageRating(find30kTo40k);
+    std::cout << std::endl;
+
+    std::cout <<"Experiment 5: Delete records with numVotes = 100" << std::endl;
+    int numNodeDeleted = bplustree.DeleteKey(1000);
+    std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
+    bplustree.PrintStats();
 
 
     // std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> test = bplustree.FindRange(32069, 40000);
     // getAverageRating(test);
 
-    bplustree.PrintStats();
-
-    // int numNodeDeleted = bplustree.DeleteKey(1000);
-
-    // std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
-    // bplustree.PrintStats();
+    
 
     // bplustree.FindRange(1000, 1000);
 

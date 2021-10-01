@@ -8,7 +8,7 @@
 
 // void BPlusTree::InsertNode(std::uint32_t key, std::shared_ptr<Record> record)
 void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
-    std::cerr << "[BPlusTree::InsertNode] insert key: " << key << std::endl; 
+    // std::cerr << "[BPlusTree::InsertNode] insert key: " << key << std::endl; 
     if (root == nullptr) {
         // std::cerr << "root is nullptr, insert immediately" << std::endl;
         // create new node
@@ -52,7 +52,7 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
         }
 
         if (traverseNode->keys.size() < size) {
-            std::cerr << "current traverseNode still have empty space" << std::endl;
+            // std::cerr << "current traverseNode still have empty space" << std::endl;
             // insert into this current node
             
             int insertPos = -1;
@@ -111,18 +111,18 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
                 // }
             }
         } else {
-            std::cerr << "current traverseNode does not have empty space" << std::endl;
+            // std::cerr << "current traverseNode does not have empty space" << std::endl;
 
 
             // split
             std::shared_ptr<Node> newLeaf = std::make_shared<Node>(true, size);
-            std::cerr << "traverse node key size: " << traverseNode->keys.size() << std::endl;
-            std::cerr << "traverse node ptr size: " << traverseNode->ptrs.size() << std::endl;
+            // std::cerr << "traverse node key size: " << traverseNode->keys.size() << std::endl;
+            // std::cerr << "traverse node ptr size: " << traverseNode->ptrs.size() << std::endl;
             
             std::vector<float> tempKeys(traverseNode->keys);
             std::vector<std::shared_ptr<void>> tempPtrs(traverseNode->ptrs);
 
-            std::cerr << "copy tempKey size: " << tempKeys.size() << std::endl;
+            // std::cerr << "copy tempKey size: " << tempKeys.size() << std::endl;
 
             // to optimise, can use binary scan instead of linear scan
 
@@ -157,7 +157,7 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
                     // break;
                 }
             }
-            std::cerr << "insert pos: " << insertPos << std::endl; 
+            // std::cerr << "insert pos: " << insertPos << std::endl; 
 
 
             if (duplicate && insertPos != -1) {
@@ -181,7 +181,7 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
 
             // split vector into 2 for 2 nodes
 
-            std::cerr << "split" << std::endl;
+            // std::cerr << "split" << std::endl;
 
             // qn, is the splitting correct...?
             std::size_t splitSize = (tempKeys.size() + 1)/2;
@@ -442,6 +442,7 @@ std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>
 
     while (!itrIsLeaf) {
         if (numIOForNodes <= 5) {
+            std::cout << "Content in node accessed: ";
             PrintNodeWithoutPtr(itr);
         }
         for (int i = 0; i < itr->keys.size(); i++) {
@@ -472,24 +473,24 @@ std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>
     int count = 0;
     while (!terminate) {
         // search through the keys to find the end point
-        std::cerr << "start ? " << std::endl;
+        // std::cerr << "start ? " << std::endl;
         int keySize;
         if (itr->keys.size() > size) {
             keySize = size;
             std::cerr << "key size more than expected" << std::endl;
             break;
-            //exit(0);
+            exit(0);
         } else {
             keySize = itr->keys.size();
         }
         for (int i = 0; i < keySize; i++) {
-            std::cerr << "in for loop " << itr->keys.size()  << std::endl;
+            // std::cerr << "in for loop " << itr->keys.size()  << std::endl;
             if (itr->keys[i] > end) {
-                std::cerr << itr->keys[i] << ">"  << end << std::endl;
+                // std::cerr << itr->keys[i] << ">"  << end << std::endl;
                 terminate = true;
                 break;
             } else if (itr->keys[i] >= begin) {
-                std::cerr << "+1" << std::endl;
+                // std::cerr << "+1" << std::endl;
                 // print content for key
                 // std::cerr << "check offset: " << itr->ptrs[i].offset << std::endl;
                 // if (itr->ptrs[i].ptr == addressBefore.ptr)
@@ -498,31 +499,32 @@ std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>
                 //     addressBefore = itr->ptrs[i];
                 numIOForNodes++;
                 // blkPtrs.push_back(std::make_pair(itr->keys[i], std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(itr->ptrs[i])));
-                PrintRecordInLL(itr->ptrs[i], itr->keys[i]);
-                std::cerr << count << std::endl;
+                // uncomment to print out records found
+                // PrintRecordInLL(itr->ptrs[i], itr->keys[i]);
+                // std::cerr << count << std::endl;
                 count++;
 
                 std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>> newPair = std::make_pair(
                     itr->keys[i], 
                     std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(itr->ptrs[i]));
-                std::cerr << "crash where? " << std::endl;
+                // std::cerr << "crash where? " << std::endl;
                 blkPtrs.push_back(newPair);
             }
 
-            std::cerr << "here" << std::endl;
+            // std::cerr << "here" << std::endl;
             if (i == itr->keys.size()-1 && itr->ptrs.size() > itr->keys.size()) {
-                std::cerr << "next" << std::endl;
+                // std::cerr << "next" << std::endl;
                 itr = std::static_pointer_cast<Node>(itr->ptrs[itr->ptrs.size()-1]);
                 break;
             } else if (i == itr->keys.size()-1) {
                 terminate = true;
             }
         }
-        std::cerr << "stuck in second for loop" << std::endl;
+        // std::cerr << "stuck in second for loop" << std::endl;
     }
-    std::cerr << "Number of Index Node IO: " << numIOForNodes << std::endl;
+    std::cout << "Number of Index Node IO: " << numIOForNodes << std::endl;
     if (blkPtrs.size() == 0) {
-        std::cerr << begin <<  " to " << end << " -- nothing is found" << std::endl;
+        std::cout << begin <<  " to " << end << " -- nothing is found" << std::endl;
     }
     return blkPtrs;
 }
@@ -591,7 +593,7 @@ int BPlusTree::DeleteKey(float key) {
         }
         
         
-        std::cerr << "records deleted: " << llToDelete->size() << std::endl;
+        // std::cerr << "records deleted: " << llToDelete->size() << std::endl;
         
         //delete key and pointer at i-th position in leaf node
         traverseNode->keys.erase(traverseNode->keys.begin() + deletePos);
@@ -604,10 +606,10 @@ int BPlusTree::DeleteKey(float key) {
                 root = nullptr;
                 numNodesDeleted++;
                 numNodes--;
-                std::cout << "B+ tree only has root node with 1 key" << std::endl;
+                // std::cout << "B+ tree only has root node with 1 key" << std::endl;
                 std::cout << "Root node deleted" << std::endl;
             }
-            std::cout << "Successfully deleted" << key << "!" << std::endl;
+            // std::cout << "Successfully deleted" << key << "!" << std::endl;
             return numNodesDeleted;
         }
 
@@ -644,7 +646,7 @@ int BPlusTree::DeleteKey(float key) {
 
                 // update parent's key with first key of current node
                 parentNode->keys[leftSibling] = traverseNode->keys[0];
-                std::cout << "Borrowed key from left sibling" << std::endl;
+                // std::cout << "Borrowed key from left sibling" << std::endl;
                 return numNodesDeleted;
             }
         }
@@ -667,7 +669,7 @@ int BPlusTree::DeleteKey(float key) {
 
                 // update parent's keys with first key of sibling node
                 parentNode->keys[rightSibling - 1] = rightSiblingNode->keys[0];
-                std::cout << "Borrowed key from right sibling" << std::endl;
+                // std::cout << "Borrowed key from right sibling" << std::endl;
                 return numNodesDeleted;
             }
         }
@@ -685,7 +687,7 @@ int BPlusTree::DeleteKey(float key) {
 
             numNodesDeleted++;
             numNodesDeleted += RemoveInternal(parentNode->keys[leftSibling], parentNode, traverseNode);
-            std::cout << "Merged left sibling node" << std::endl;
+            // std::cout << "Merged left sibling node" << std::endl;
             return numNodesDeleted;
         }
 
@@ -700,7 +702,7 @@ int BPlusTree::DeleteKey(float key) {
             traverseNode->ptrs.back() = rightSiblingNode->ptrs.back();
             numNodesDeleted++;
             numNodesDeleted += RemoveInternal(parentNode->keys[rightSibling - 1], parentNode, rightSiblingNode);
-            std::cout << "Merged right sibling node" << std::endl;
+            // std::cout << "Merged right sibling node" << std::endl;
             return numNodesDeleted;
         }
     }
@@ -722,7 +724,7 @@ int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std
                 // second pointer in root points to the invalid leaf node
                 // set new root as the node pointed to by the left pointer (index 0)
                 this->root = std::static_pointer_cast<Node>(traverseNode->ptrs[0]);
-                std::cout << "Root Node Changed" << std::endl;
+                // std::cout << "Root Node Changed" << std::endl;
                 numNodesDeleted++;
                 numNodes--;
                 return numNodesDeleted;
@@ -731,7 +733,7 @@ int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std
                 // first pointer in root points to the invalid node
                 // set new root as the node pointed to by the right pointer
                 this->root = std::static_pointer_cast<Node>(traverseNode->ptrs[1]);
-                std::cout << "Root Node Changed" << std::endl;
+                // std::cout << "Root Node Changed" << std::endl;
                 numNodesDeleted++;
                 return numNodesDeleted;
             }
@@ -763,16 +765,16 @@ int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std
     // check for underflow
     if (traverseNode->keys.size() >= ((size + 1) / 2 - 1)){
         // there is no underflow
-        std::cout << key << " deleted from internal node" << std::endl;
+        // std::cout << key << " deleted from internal node" << std::endl;
         return numNodesDeleted;
     }
 
     // there is underflow in internal node
-    std::cout << "Underflow detected in internal node" << std::endl;
+    // std::cout << "Underflow detected in internal node" << std::endl;
 
     if (traverseNode == root) {
         // Okay for root node to have underflow
-        std::cout << "Internal Node is root node" << std::endl;
+        // std::cout << "Internal Node is root node" << std::endl;
         return numNodesDeleted;
     }
 
@@ -854,7 +856,7 @@ int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std
         leftSiblingNode->ptrs.insert(leftSiblingNode->ptrs.end(), traverseNode->ptrs.begin(), traverseNode->ptrs.end());
 
         numNodesDeleted += RemoveInternal(parentNode->keys[leftSibling], parentNode, traverseNode);
-        std::cout << "Merged with left sibling in RemoveInternal()" << std::endl;
+        // std::cout << "Merged with left sibling in RemoveInternal()" << std::endl;
         numNodesDeleted++;
     } else if (rightSibling <= parentNode->keys.size()) {
         // right sibling exists
@@ -877,7 +879,7 @@ int BPlusTree::RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std
         // }
 
         numNodesDeleted += RemoveInternal(parentNode->keys[rightSibling - 1], parentNode, rightSiblingNode);
-        std::cout << "Merged with right sibling in RemoveInternal()" << std::endl;
+        // std::cout << "Merged with right sibling in RemoveInternal()" << std::endl;
         numNodesDeleted++;
     }
 
@@ -908,9 +910,9 @@ void BPlusTree::PrintStats() {
     std::cout << "Number of nodes in B+ Tree: " << numNodes << std::endl;
     std::cout << "Height of B+ Tree: " << GetHeight() << std::endl;
     std::cout << "Content of root node: " << std::endl;
-    PrintNode(root);
+    PrintNodeWithoutPtr(root);
     std::cout << "Content of 1st child node: " << std::endl;
-    PrintNode(std::static_pointer_cast<Node>(root->ptrs[0]));
+    PrintNodeWithoutPtr(std::static_pointer_cast<Node>(root->ptrs[0]));
     std::cout << "----------------------------------------------" << std::endl;
 }
 
