@@ -1,5 +1,5 @@
 #include <iostream>
-#include <queue>
+#include <utility>
 
 #include "bplustree.h"
 // movement of ptr value
@@ -139,20 +139,22 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
                     break;
                 }
                 if (i == tempKeys.size()-1) {
-                    // change this too
-
-                    // insert at the end of the vector
-                    tempKeys.push_back(key);
-                    // insert ptr at the second last pos of the vector
-                    // Pointer llPointer(blockPtr);
-                    
-                    std::shared_ptr<std::vector<std::shared_ptr<Block>>> ptrVector = std::make_shared<std::vector<std::shared_ptr<Block>>>();
-                    ptrVector->push_back(blockPtr);
-                    // std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
-                    // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
-                    tempPtrs.insert(tempPtrs.begin() + tempPtrs.size(), ptrVector);
-                    numNodes++;
+                    insertPos = tempKeys.size();
                     break;
+                    // // change this too
+
+                    // // insert at the end of the vector
+                    // tempKeys.push_back(key);
+                    // // insert ptr at the second last pos of the vector
+                    // // Pointer llPointer(blockPtr);
+                    
+                    // std::shared_ptr<std::vector<std::shared_ptr<Block>>> ptrVector = std::make_shared<std::vector<std::shared_ptr<Block>>>(blockPtr);
+                    // // ptrVector->push_back(blockPtr);
+                    // // std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
+                    // // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
+                    // tempPtrs.insert(tempPtrs.begin() + tempPtrs.size(), ptrVector);
+                    // numNodes++;
+                    // break;
                 }
             }
             std::cerr << "insert pos: " << insertPos << std::endl; 
@@ -416,11 +418,12 @@ void BPlusTree::PrintRecordInLL(std::shared_ptr<void> ptr, float key) {
     // std::shared_ptr<Block> block = std::static_pointer_cast<Block>(ptr.ptr);
 }
 
-void BPlusTree::FindRange(float begin, float end) {
-    int numIO = 0;
+std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> BPlusTree::FindRange(float begin, float end) {
+    std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> blkPtrs;
+    // return vector of pair(key, vector of block shared_ptr)
     if (end < begin) {
         std::cerr << "[BPLUSTREE::FindRange] range error" << std::endl;
-        return;
+        return {};
     }
     // } else if (begin == end) {
     //     Find(begin);
@@ -429,7 +432,14 @@ void BPlusTree::FindRange(float begin, float end) {
     std::cerr << "[BPLUSTREE::FindRange] " << begin << " to " << end << std::endl;
     // check through key node, if begin < key node, go left, else go right to continue to find till the last element
     std::shared_ptr<Node> itr = root;
+    if (itr == nullptr) {
+        std::cout << "B+ Tree is empty" << std::endl;
+        return {};
+    }
+
+    int numIOForNodes = 1;
     bool itrIsLeaf = root->isLeaf;
+
     while (!itrIsLeaf) {
         for (int i = 0; i < itr->keys.size(); i++) {
             if (begin < itr->keys[i]) {
@@ -446,6 +456,8 @@ void BPlusTree::FindRange(float begin, float end) {
         if (itr->isLeaf) {
             itrIsLeaf = true;
             // std::cerr << "is leaf";
+        } else {
+            numIOForNodes++;
         }
         // std::cerr << "stuck in first for loop" << std::endl;
     }
@@ -453,35 +465,63 @@ void BPlusTree::FindRange(float begin, float end) {
     // scan through ll of leaf level & display it?
     bool terminate = false;
     std::shared_ptr<void> addressBefore;
+
+    int count = 0;
     while (!terminate) {
         // search through the keys to find the end point
-        for (int i = 0; i < itr->keys.size(); i++) {
+        std::cerr << "start ? " << std::endl;
+        int keySize;
+        if (itr->keys.size() > size) {
+            keySize = size;
+            std::cerr << "key size more than expected" << std::endl;
+            break;
+            //exit(0);
+        } else {
+            keySize = itr->keys.size();
+        }
+        for (int i = 0; i < keySize; i++) {
+            std::cerr << "in for loop " << itr->keys.size()  << std::endl;
             if (itr->keys[i] > end) {
-                //std::cerr << itr->keys[i] << ">"  << end << std::endl;
+                std::cerr << itr->keys[i] << ">"  << end << std::endl;
                 terminate = true;
                 break;
             } else if (itr->keys[i] >= begin) {
-                //std::cerr << "+1" << std::endl;
+                std::cerr << "+1" << std::endl;
                 // print content for key
                 // std::cerr << "check offset: " << itr->ptrs[i].offset << std::endl;
                 // if (itr->ptrs[i].ptr == addressBefore.ptr)
                 //     continue;
                 // else
                 //     addressBefore = itr->ptrs[i];
+                numIOForNodes++;
+                // blkPtrs.push_back(std::make_pair(itr->keys[i], std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(itr->ptrs[i])));
                 PrintRecordInLL(itr->ptrs[i], itr->keys[i]);
-                numIO++;
+                std::cerr << count << std::endl;
+                count++;
+
+                std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>> newPair = std::make_pair(
+                    itr->keys[i], 
+                    std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(itr->ptrs[i]));
+                std::cerr << "crash where? " << std::endl;
+                blkPtrs.push_back(newPair);
             }
+
+            std::cerr << "here" << std::endl;
             if (i == itr->keys.size()-1 && itr->ptrs.size() > itr->keys.size()) {
-                //std::cerr << "next" << std::endl;
+                std::cerr << "next" << std::endl;
                 itr = std::static_pointer_cast<Node>(itr->ptrs[itr->ptrs.size()-1]);
                 break;
             } else if (i == itr->keys.size()-1) {
                 terminate = true;
             }
         }
-        //std::cerr << "stuck in second for loop" << std::endl;
+        std::cerr << "stuck in second for loop" << std::endl;
     }
-    std::cerr << "Number of IO: " << numIO << std::endl;
+    std::cerr << "Number of Index Node IO: " << numIOForNodes << std::endl;
+    if (blkPtrs.size() == 0) {
+        std::cerr << begin <<  " to " << end << " -- nothing is found" << std::endl;
+    }
+    return blkPtrs;
 }
 
 int BPlusTree::DeleteKey(float key) {

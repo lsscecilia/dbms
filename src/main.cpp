@@ -8,6 +8,28 @@
 #include "storage.h"
 #include "bplustree.h"
 
+void getAverageRating(std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>>& blkPtrs) {
+    double totalRatings = 0;
+    int totalRecords = 0;
+    int numIOForDataBlocks = 0;
+    for (std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>& keyBlks : blkPtrs) {
+        for (int i = 0; i < keyBlks.second->size(); i++) {
+            std::shared_ptr<Block> keyBlk = keyBlks.second->at(i);
+            std::vector<Record> records = keyBlk->getRecord(keyBlks.first);
+            for (Record& r : records) {
+                totalRatings += r.averageRating;
+            }
+            totalRecords += records.size();
+        }
+        numIOForDataBlocks += keyBlks.second->size();
+    }
+    double averageRating = totalRatings/totalRecords;
+    std::cout << "-------------- access data block -------------" << std::endl;
+    std::cout << "Number of data block IO: " << numIOForDataBlocks << std::endl;;
+    std::cout << "Average Ratings: " << averageRating << std::endl;
+    std::cout << "----------------------------------------------" << std::endl;
+}
+
 int main() {
 
     // get block size
@@ -112,9 +134,24 @@ int main() {
     std::cout << "find records with numVotes = 500" << std::endl;
     bplustree.FindRange(22, 22);
 
-    bplustree.FindRange(18,18);
+    std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find500 = bplustree.FindRange(500, 500);
+    getAverageRating(find500);
+
+    std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find30kTo40k = bplustree.FindRange(30000, 40000);
+    getAverageRating(find30kTo40k);
+
+
+    // std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> test = bplustree.FindRange(32069, 40000);
+    // getAverageRating(test);
 
     bplustree.PrintStats();
+
+    int numNodeDeleted = bplustree.DeleteKey(1000);
+
+    std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
+    bplustree.PrintStats();
+
+    bplustree.FindRange(1000, 1000);
 
     std::cout << "program end" << std::endl;
 }

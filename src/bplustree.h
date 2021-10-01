@@ -56,7 +56,7 @@ class BPlusTree {
     int DeleteKey(float key);
     int RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> childToDelete);
     void Find(float key);
-    void FindRange(float begin, float end);
+    std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> FindRange(float begin, float end);
     void SplitInternal();
     void SplitLeaf();
     void PrintTree();
