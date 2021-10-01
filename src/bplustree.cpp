@@ -15,9 +15,11 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
         root = std::make_shared<Node>(true, size); 
         root->keys.push_back(key);
         // std::cout << "ll size: " << llSize << std::endl;
-        std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
+        std::shared_ptr<std::vector<std::shared_ptr<Block>>> ptrVector = std::make_shared<std::vector<std::shared_ptr<Block>>>();
+        ptrVector->push_back(blockPtr);
+        // std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
         // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
-        root->ptrs.push_back(ll);
+        root->ptrs.push_back(ptrVector);
     } else {
         // std::cerr << "root is not nullptr" << std::endl;
         std::shared_ptr<Node> traverseNode = root;
@@ -71,43 +73,51 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
 
             // deal with duplicate
             if (duplicate && insertPos != -1) {
-                // std::cerr << "duplicate" << std::endl;
-                // insert into linkedlist
-                std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[insertPos]);
-                // std::cerr << "insert ll size: " << ll->ptrs.size() << std::endl;
-                
-                // while (ll->next != nullptr) {
-                //     ll = ll->next;
-                //     std::cerr << "should nto happen " << ll << std::endl;
-                //     std::cerr << ".. " << (ll->next == nullptr) << std::endl;
+                std::shared_ptr<std::vector<std::shared_ptr<Block>>> ll = std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(traverseNode->ptrs[insertPos]);
+                ll->push_back(blockPtr);
+                // std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[insertPos]);
+                // if (!ll) {
+                //     std::cerr << "is not pointing to ll" << std::endl;
+                //     exit(1);
                 // }
-                // // bug here, ptr pointer to idk whr
-                // std::cerr << "ll: " << ll << std::endl; 
+                // ll->ptrs.push_back(blockPtr);
+                // // std::cerr << "duplicate" << std::endl;
+                // // insert into linkedlist
+                // std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[insertPos]);
+                // // std::cerr << "insert ll size: " << ll->ptrs.size() << std::endl;
+                
+                // // while (ll->next != nullptr) {
+                // //     ll = ll->next;
+                // //     std::cerr << "should nto happen " << ll << std::endl;
+                // //     std::cerr << ".. " << (ll->next == nullptr) << std::endl;
+                // // }
+                // // // bug here, ptr pointer to idk whr
+                // // std::cerr << "ll: " << ll << std::endl; 
 
-                bool llToInsertFound = false;
-                while (!llToInsertFound) {
-                    if (ll->haveSpace()) {
-                        // std::cerr << "ll still have space" << std::endl;
-                        ll->ptrs.push_back(blockPtr);
-                        std::cerr << "ll count ref: " << ll.use_count() << std::endl;
-                        std::cerr << "block inside: " << ll->ptrs[ll->ptrs.size()-1].use_count() << std::endl;
-                        llToInsertFound = true;
-                    } else {
-                        if (ll->last) {
-                            // create new ll
-                            std::shared_ptr<LinkedList> newll = std::make_shared<LinkedList>(llSize, blockPtr);
-                            ll->next = std::move(newll);
-                            std::cerr << "new ll count ref: " << ll->next.use_count() << std::endl;
-                            std::cerr << "ll inside: " << ll->ptrs[0].use_count() << std::endl;
-                            llToInsertFound = true;
-                            ll->last = false;
-                        } else {
-                            ll = ll->next;
-                            // std::cerr << "next: " << ll->next << std::endl;
-                        }
+                // bool llToInsertFound = false;
+                // while (!llToInsertFound) {
+                //     if (ll->haveSpace()) {
+                //         // std::cerr << "ll still have space" << std::endl;
+                //         ll->ptrs.push_back(blockPtr);
+                //         std::cerr << "ll count ref: " << ll.use_count() << std::endl;
+                //         std::cerr << "block inside: " << ll->ptrs[ll->ptrs.size()-1].use_count() << std::endl;
+                //         llToInsertFound = true;
+                //     } else {
+                //         if (ll->last) {
+                //             // create new ll
+                //             std::shared_ptr<LinkedList> newll = std::make_shared<LinkedList>(llSize, blockPtr);
+                //             ll->next = std::move(newll);
+                //             std::cerr << "new ll count ref: " << ll->next.use_count() << std::endl;
+                //             std::cerr << "ll inside: " << ll->ptrs[0].use_count() << std::endl;
+                //             llToInsertFound = true;
+                //             ll->last = false;
+                //         } else {
+                //             ll = ll->next;
+                //             // std::cerr << "next: " << ll->next << std::endl;
+                //         }
                         
-                    }
-                }
+                //     }
+                // }
                 
             } else if (insertPos != -1) {
                 // insert key in vector
@@ -118,10 +128,12 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
                 // std::cerr << "before insert size: " << traverseNode->ptrs.size() << std::endl;
 
                 std::vector<std::shared_ptr<void>>::iterator ptrInsertItr = traverseNode->ptrs.begin() + insertPos;
-            
-                std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
+
+                std::shared_ptr<std::vector<std::shared_ptr<Block>>> ptrVector = std::make_shared<std::vector<std::shared_ptr<Block>>>();
+                ptrVector->push_back(blockPtr);
+                // std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
                 // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
-                traverseNode->ptrs.insert(ptrInsertItr, ll);
+                traverseNode->ptrs.insert(ptrInsertItr, ptrVector);
 
                 // if (insertPos >= traverseNode->ptrs.size()) {
                 //     traverseNode->ptrs.push_back(ll);
@@ -177,10 +189,11 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
                     // insert ptr at the second last pos of the vector
                     // Pointer llPointer(blockPtr);
                     
-
-                    std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
-                    std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
-                    tempPtrs.insert(tempPtrs.begin() + tempPtrs.size(), std::move(ll));
+                    std::shared_ptr<std::vector<std::shared_ptr<Block>>> ptrVector = std::make_shared<std::vector<std::shared_ptr<Block>>>();
+                    ptrVector->push_back(blockPtr);
+                    // std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
+                    // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
+                    tempPtrs.insert(tempPtrs.begin() + tempPtrs.size(), ptrVector);
                     break;
                 }
             }
@@ -188,30 +201,32 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
 
 
             if (duplicate && insertPos != -1) {
-                // insert into linkedlist
-                std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[insertPos]);
-                // std::cerr << "insert ll size: " << ll->ptrs.size() << std::endl;
-                bool llToInsertFound = false;
-                while (!llToInsertFound) {
-                    if (ll->haveSpace()) {
-                        // std::cerr << "ll still have space" << std::endl;
-                        ll->ptrs.push_back(blockPtr);
-                        llToInsertFound = true;
-                    } else {
-                        if (ll->last) {
-                            // create new ll
-                            std::shared_ptr<LinkedList> newll = std::make_shared<LinkedList>(llSize, blockPtr);
-                            ll->next = std::move(newll);
-                            llToInsertFound = true;
-                            ll->last = false;
-                        } else {
-                            ll = ll->next;
-                            // std::cerr << "next: " << ll->next << std::endl;
-                        }
+                std::shared_ptr<std::vector<std::shared_ptr<Block>>> ll = std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(traverseNode->ptrs[insertPos]);
+                ll->push_back(blockPtr);
+                // // insert into linkedlist
+                // std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[insertPos]);
+                // // std::cerr << "insert ll size: " << ll->ptrs.size() << std::endl;
+                // bool llToInsertFound = false;
+                // while (!llToInsertFound) {
+                //     if (ll->haveSpace()) {
+                //         // std::cerr << "ll still have space" << std::endl;
+                //         ll->ptrs.push_back(blockPtr);
+                //         llToInsertFound = true;
+                //     } else {
+                //         if (ll->last) {
+                //             // create new ll
+                //             std::shared_ptr<LinkedList> newll = std::make_shared<LinkedList>(llSize, blockPtr);
+                //             ll->next = std::move(newll);
+                //             llToInsertFound = true;
+                //             ll->last = false;
+                //         } else {
+                //             ll = ll->next;
+                //             // std::cerr << "next: " << ll->next << std::endl;
+                //         }
                         
-                    }
-                }
-                return;
+                //     }
+                // }
+                // return;
             } else if (insertPos != -1) {
                 // insert at key in vector
                 std::vector<float>::iterator insertItr = tempKeys.begin() + insertPos;
@@ -219,10 +234,12 @@ void BPlusTree::InsertNode(float key, std::shared_ptr<Block> blockPtr) {
                 
                 // insert ptr in vector
                 std::vector<std::shared_ptr<void>>::iterator ptrInsertItr = tempPtrs.begin() + insertPos;
-    
-                std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
+                
+                std::shared_ptr<std::vector<std::shared_ptr<Block>>> ptrVector = std::make_shared<std::vector<std::shared_ptr<Block>>>();
+                ptrVector->push_back(blockPtr);
+                // std::shared_ptr<LinkedList> ll = std::make_shared<LinkedList>(llSize, blockPtr);
                 // std::cerr << "ll address: " << ll << " , key: " << key << std::endl;
-                tempPtrs.insert(ptrInsertItr, ll);
+                tempPtrs.insert(ptrInsertItr, ptrVector);
             }
 
             // split vector into 2 for 2 nodes
@@ -438,21 +455,25 @@ void BPlusTree::PrintRecords(std::shared_ptr<Node> node) {
 }
 
 void BPlusTree::PrintRecordInLL(std::shared_ptr<void> ptr, float key) {
-    std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(ptr);
-    while (ll != nullptr) {
-        for (std::shared_ptr<Block> block : ll->ptrs) {
-            // print duplicate keys in same block
-            std::vector<Record> records =  block->getRecord(key);
-            // std::cerr << "ptr address : " << ptr.ptr << std::endl;
-            // std::cerr << "num records: " << records.size() << std::endl;
-            for (Record record : records) {
-                std::cout << record.toString();
-            }
+    std::shared_ptr<std::vector<std::shared_ptr<Block>>> ll = std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(ptr);
+
+    // std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(ptr);
+    // while (ll != nullptr) {
+    for (int i = 0; i < ll->size(); i++) {
+        std::shared_ptr<Block> blk = ll->at(i);
+    // for (std::shared_ptr<Block> block : ll) {
+        // print duplicate keys in same block
+        std::vector<Record> records =  blk->getRecord(key);
+        // std::cerr << "ptr address : " << ptr.ptr << std::endl;
+        // std::cerr << "num records: " << records.size() << std::endl;
+        for (Record record : records) {
+            std::cout << record.toString();
         }
-        if (ll->last)
-            break;
-        ll = ll->next;
     }
+    //     if (ll->last)
+    //         break;
+    //     ll = ll->next;
+    // }
     
     // std::shared_ptr<Block> block = std::static_pointer_cast<Block>(ptr.ptr);
 }
@@ -632,12 +653,14 @@ int BPlusTree::DeleteKey(float key) {
 
         // delete the specified record
         // TODO: function to delete record given the pointer??
-        std::shared_ptr<LinkedList> llToDelete = std::static_pointer_cast<LinkedList>(traverseNode->ptrs[deletePos]);
-        for (std::shared_ptr<Block> keyBlock : llToDelete->ptrs) {
+        std::shared_ptr<std::vector<std::shared_ptr<Block>>> llToDelete = std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(traverseNode->ptrs[deletePos]);
+        for (int i = 0; i < llToDelete->size(); i++) {
+            std::shared_ptr<Block> keyBlock = llToDelete->at(i);
             keyBlock->DeleteRecord(key);
         }
-        std::cerr << "records deleted: " << llToDelete->ptrs.size() << std::endl;
-        //std::shared_ptr<Block> keyBlock = std::static_pointer_cast<Block>(traverseNode->ptrs[deletePos].ptr);
+        
+        
+        std::cerr << "records deleted: " << llToDelete->size() << std::endl;
         
         //delete key and pointer at i-th position in leaf node
         traverseNode->keys.erase(traverseNode->keys.begin() + deletePos);

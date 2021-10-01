@@ -90,7 +90,7 @@ int main() {
         }
 
         bplustree.InsertNode(newRecord.numVotes, blockPtr);
-        // if (count == 1000)
+        // if (count == 100000)
         //     break;
         count++;
         // if (count%100000 == 0)

@@ -416,13 +416,13 @@ TEST (BPlusTreeTest, linkLeafLevel) {
 		// std::cerr << "ptr size: " << ll->ptrs.size() << std::endl;
 		for (int i = 0; i < ll->keys.size(); i++) {
 			std::cout << ll->keys[i] << ",";
-			std::shared_ptr<LinkedList> llForEachKey =  std::static_pointer_cast<LinkedList>(ll->ptrs[i]);
+			std::shared_ptr<std::vector<std::shared_ptr<Block>>> llForEachKey =  std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(ll->ptrs[i]);
 			// std::cerr << "crash where? " << llForEachKey << std::endl;
 			// for (std::shared_ptr<Block> blk : llForEachKey->ptrs)
 			// std::cerr << "ll size: " << llForEachKey->ptrs.size() << std::endl;
-			for (int r = 0; r < llForEachKey->ptrs.size(); r++) {
+			for (int r = 0; r < llForEachKey->size(); r++) {
 				// std::cerr << "for loop" << llForEachKey->ptrs[r] << std::endl;
-				std::shared_ptr<Block> blk = llForEachKey->ptrs[r];
+				std::shared_ptr<Block> blk = llForEachKey->at(r);
 				// std::cerr << "get block" << blk << std::endl;
 				std::vector<Record> records = blk->getRecord(ll->keys[i]);
 				// std::cerr << "get record" << records.size() << std::endl;
@@ -1007,13 +1007,13 @@ TEST (BPlusTree, leafLevelLinkAfterDeletion) {
 		// std::cerr << "ptr size: " << ll->ptrs.size() << std::endl;
 		for (int i = 0; i < ll->keys.size(); i++) {
 			std::cout << ll->keys[i] << ",";
-			std::shared_ptr<LinkedList> llForEachKey =  std::static_pointer_cast<LinkedList>(ll->ptrs[i]);
+			std::shared_ptr<std::vector<std::shared_ptr<Block>>> llForEachKey =  std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(ll->ptrs[i]);
 			// std::cerr << "crash where? " << llForEachKey << std::endl;
 			// for (std::shared_ptr<Block> blk : llForEachKey->ptrs)
 			// std::cerr << "ll size: " << llForEachKey->ptrs.size() << std::endl;
-			for (int r = 0; r < llForEachKey->ptrs.size(); r++) {
+			for (int r = 0; r < llForEachKey->size(); r++) {
 				// std::cerr << "for loop" << llForEachKey->ptrs[r] << std::endl;
-				std::shared_ptr<Block> blk = llForEachKey->ptrs[r];
+				std::shared_ptr<Block> blk = llForEachKey->at(r);
 				// std::cerr << "get block" << blk << std::endl;
 				std::vector<Record> records = blk->getRecord(ll->keys[i]);
 				// std::cerr << "get record" << records.size() << std::endl;
@@ -1079,77 +1079,6 @@ TEST (BPlusTree, deleteKeysFromDuplicatedTree) {
 		// }
 		// std::cerr << "end child" << std::endl;
 	}
-}
-
-TEST (BPlusTree, linkedListLink) {
-	BPlusTree bplustree(3, 5);
-	
-	Record r1("r1", 1.00, 1);
-	Record r2("r2", 2.00, 1);
-	Record r3("r3", 3.00, 1);
-	Record r4("r4", 4.00, 1);
-	Record r5("r5", 5.00, 1);
-	Record r6("r6", 6.00, 1);
-	Record r7("r7", 7.00, 1);
-	Record r8("r8", 8.00, 1);
-	Record r9("r9", 9.00, 1);
-	Record r10("r10", 10.00, 1);
-
-	std::shared_ptr<Block> b1 = std::make_shared<Block>(2);
-	std::shared_ptr<Block> b2 = std::make_shared<Block>(2);
-	std::shared_ptr<Block> b3 = std::make_shared<Block>(2);
-	std::shared_ptr<Block> b4 = std::make_shared<Block>(2);
-	std::shared_ptr<Block> b5 = std::make_shared<Block>(2);
-
-	b1->addRecord(r1);
-	b1->addRecord(r2);
-    
-    b2->addRecord(r3);
-	b2->addRecord(r4);
-
-    b3->addRecord(r5);
-    b3->addRecord(r6);
-
-	b4->addRecord(r7);
-	b4->addRecord(r8);
-
-	b5->addRecord(r9);
-	b5->addRecord(r10);
-
-	bplustree.InsertNode(1, b1);
-	bplustree.InsertNode(1, b1);
-
-	bplustree.InsertNode(1, b2);
-    bplustree.InsertNode(1, b2);
-
-    bplustree.InsertNode(1, b3);
-    bplustree.InsertNode(1, b3);
- 
-	bplustree.InsertNode(1, b4);
-    bplustree.InsertNode(1, b4);
-
-	bplustree.InsertNode(1, b5);
-    bplustree.InsertNode(1, b5);
-
-	std::shared_ptr<Node> root = bplustree.GetRoot();
-	std::shared_ptr<LinkedList> ll = std::static_pointer_cast<LinkedList>(root->ptrs[0]);
-	// std::cerr << "size of ll: " << ll->ptrs.size() << std::endl;
-	// std::cerr << "next: " << ll->next << std::endl;
-	while (ll != nullptr) {
-		for (std::shared_ptr<Block> blk : ll->ptrs) {
-			// std::cerr << "did this hapen " << std::endl;
-			// std::cerr << blk << " | ";
-		}
-		ll = ll->next;
-	}
-	bplustree.PrintNode(root);
-
-	bplustree.FindRange(1,1);
-
-	bplustree.DeleteKey(1);
-
-	std::cerr << "records in b1: " << b1->getNumRecords() << std::endl;
-
 }
 
 int main(int argc, char** argv){
