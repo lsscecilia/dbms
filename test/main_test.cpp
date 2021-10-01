@@ -4,19 +4,19 @@
 #include "../src/block.h"
 #include "../src/bplustree.h"
 
-BPlusTree initDeletion() {
+BPlusTree initDuplicatedTree() {
 	BPlusTree bplustree(3);
 	
 	Record r1("r1", 1.00, 1);
 	Record r2("r2", 2.00, 2);
-	Record r3("r3", 3.00, 1);
-	Record r4("r4", 4.00, 2);
-	Record r5("r5", 5.00, 1);
-	Record r6("r6", 6.00, 2);
-	Record r7("r7", 7.00, 1);
-	Record r8("r8", 8.00, 2);
-	Record r9("r9", 9.00, 1);
-	Record r10("r10", 10.00, 1);
+	Record r3("r3", 3.00, 2);
+	Record r4("r4", 4.00, 3);
+	Record r5("r5", 5.00, 3);
+	Record r6("r6", 6.00, 3);
+	Record r7("r7", 7.00, 4);
+	Record r8("r8", 8.00, 5);
+	Record r9("r9", 9.00, 6);
+	Record r10("r10", 10.00, 7);
 
 	Record r11("r11", 11.00, 1);
 	Record r12("r12", 12.00, 2);
@@ -27,6 +27,113 @@ BPlusTree initDeletion() {
 	Record r17("r17", 17.00, 1);
 	Record r18("r18", 18.00, 2);
 	Record r19("r19", 19.00, 1);
+
+	// each block only 2 record
+	std::shared_ptr<Block> b1 = std::make_shared<Block>(2);
+
+	std::shared_ptr<Block> b2 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b3 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b4 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b5 = std::make_shared<Block>(2);
+
+	std::shared_ptr<Block> b6 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b7 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b8 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b9 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b10 = std::make_shared<Block>(2);
+
+	b1->addRecord(r1);
+	b1->addRecord(r2);
+    
+    b2->addRecord(r3);
+	b2->addRecord(r4);
+
+    b3->addRecord(r5);
+    b3->addRecord(r6);
+
+	b4->addRecord(r7);
+	b4->addRecord(r8);
+
+	b5->addRecord(r9);
+	b5->addRecord(r10);
+
+	b6->addRecord(r11);
+	b6->addRecord(r12);
+
+	b7->addRecord(r13);
+	b7->addRecord(r14);
+
+	b8->addRecord(r15);
+	b8->addRecord(r16);
+
+	b9->addRecord(r17);
+	b9->addRecord(r18);
+	
+	// Record r1("r1", 1.00, 1);
+	// Record r2("r2", 2.00, 2);
+	// Record r3("r3", 3.00, 2);
+	// Record r4("r4", 4.00, 3);
+	// Record r5("r5", 5.00, 3);
+	// Record r6("r6", 6.00, 3);
+	// Record r7("r7", 7.00, 4);
+	// Record r8("r8", 8.00, 5);
+	// Record r9("r9", 9.00, 6);
+	// Record r10("r10", 10.00, 7);
+
+	bplustree.InsertKey(1, b1);
+	bplustree.InsertKey(2, b1);
+
+	bplustree.InsertKey(2, b2);
+    bplustree.InsertKey(3, b2);
+
+    bplustree.InsertKey(3, b3);
+    bplustree.InsertKey(3, b3);
+ 
+	bplustree.InsertKey(4, b4);
+    bplustree.InsertKey(5, b4);
+
+	bplustree.InsertKey(6, b5);
+    bplustree.InsertKey(7, b5);
+
+	// bplustree.InsertKey(11.00, b6);
+	// bplustree.InsertKey(12.00, b6);
+
+	// bplustree.InsertKey(13.00, b7);
+	// bplustree.InsertKey(14.00, b7);
+
+	// bplustree.InsertKey(16.00, b8);
+
+	// bplustree.InsertKey(17.00, b9);
+
+	// bplustree.InsertKey(15.00, b8);
+	// bplustree.InsertKey(18.00, b9);
+
+	return bplustree;
+}
+
+BPlusTree initDeletion() {
+	BPlusTree bplustree(3);
+	
+	Record r1("r1", 1.00, 1);
+	Record r2("r2", 2.00, 2);
+	Record r3("r3", 3.00, 3);
+	Record r4("r4", 4.00, 4);
+	Record r5("r5", 5.00, 5);
+	Record r6("r6", 6.00, 6);
+	Record r7("r7", 7.00, 7);
+	Record r8("r8", 8.00, 8);
+	Record r9("r9", 9.00, 9);
+	Record r10("r10", 10.00, 10);
+
+	Record r11("r11", 11.00, 11);
+	Record r12("r12", 12.00, 12);
+	Record r13("r13", 13.00, 13);
+	Record r14("r14", 14.00, 14);
+	Record r15("r15", 15.00, 15);
+	Record r16("r16", 16.00, 16);
+	Record r17("r17", 17.00, 17);
+	Record r18("r18", 18.00, 18);
+	Record r19("r19", 19.00, 19);
 
 	// each block only 2 record
 	std::shared_ptr<Block> b1 = std::make_shared<Block>(2);
@@ -68,33 +175,33 @@ BPlusTree initDeletion() {
 	b9->addRecord(r17);
 	b9->addRecord(r18);
 
-	bplustree.InsertNode(1.00, b1, 0);
-	bplustree.InsertNode(2.00, b1, 1);
+	bplustree.InsertKey(1.00, b1);
+	bplustree.InsertKey(2.00, b1);
 
-	bplustree.InsertNode(3.00, b2, 0);
-    bplustree.InsertNode(4.00, b2, 1);
+	bplustree.InsertKey(3.00, b2);
+    bplustree.InsertKey(4.00, b2);
 
-    bplustree.InsertNode(5.00, b3, 0);
-    bplustree.InsertNode(6.00, b3, 1);
+    bplustree.InsertKey(5.00, b3);
+    bplustree.InsertKey(6.00, b3);
  
-	bplustree.InsertNode(7.00, b4, 0);
-    bplustree.InsertNode(8.00, b4, 1);
+	bplustree.InsertKey(7.00, b4);
+    bplustree.InsertKey(8.00, b4);
 
-	bplustree.InsertNode(9.00, b5, 0);
-    bplustree.InsertNode(10.00, b5, 1);
+	bplustree.InsertKey(9.00, b5);
+    bplustree.InsertKey(10.00, b5);
 
-	bplustree.InsertNode(11.00, b6, 0);
-	bplustree.InsertNode(12.00, b6, 1);
+	bplustree.InsertKey(11.00, b6);
+	bplustree.InsertKey(12.00, b6);
 
-	bplustree.InsertNode(13.00, b7, 0);
-	bplustree.InsertNode(14.00, b7, 1);
+	bplustree.InsertKey(13.00, b7);
+	bplustree.InsertKey(14.00, b7);
 
-	bplustree.InsertNode(16.00, b8, 1);
+	bplustree.InsertKey(16.00, b8);
 
-	bplustree.InsertNode(17.00, b9, 0);
+	bplustree.InsertKey(17.00, b9);
 
-	bplustree.InsertNode(15.00, b8, 0);
-	bplustree.InsertNode(18.00, b9, 1);
+	bplustree.InsertKey(15.00, b8);
+	bplustree.InsertKey(18.00, b9);
 
 	return bplustree;
 }
@@ -102,30 +209,33 @@ BPlusTree initDeletion() {
 BPlusTree init() {
 	BPlusTree bplustree(3);
 	
+	// void Record::setRecord(string tconst_, float averageRating_, int numVotes_)
 	Record r1("r1", 1.00, 1);
 	Record r2("r2", 2.00, 2);
-	Record r3("r3", 3.00, 1);
-	Record r4("r4", 4.00, 2);
-	Record r5("r5", 5.00, 1);
-	Record r6("r6", 6.00, 2);
-	Record r7("r7", 7.00, 1);
-	Record r8("r8", 8.00, 2);
-	Record r9("r9", 9.00, 1);
-	Record r10("r10", 10.00, 1);
+	Record r3("r3", 3.00, 3);
+	Record r4("r4", 4.00, 4);
+	Record r5("r5", 5.00, 5);
+	Record r6("r6", 6.00, 6);
+	Record r7("r7", 7.00, 7);
+	Record r8("r8", 8.00, 8);
+	Record r9("r9", 9.00, 9);
+	Record r10("r10", 10.00, 10);
 
-	Record r11("r11", 11.00, 1);
-	Record r12("r12", 12.00, 2);
-	Record r13("r13", 13.00, 1);
-	Record r14("r14", 14.00, 2);
-	Record r15("r15", 15.00, 1);
-	Record r16("r16", 16.00, 2);
-	Record r17("r17", 17.00, 1);
-	Record r18("r18", 18.00, 2);
-	Record r19("r19", 19.00, 1);
+	Record r11("r11", 11.00, 11);
+	Record r12("r12", 12.00, 12);
+	Record r13("r13", 13.00, 13);
+	Record r14("r14", 14.00, 14);
+	Record r15("r15", 15.00, 15);
+	Record r16("r16", 16.00, 16);
+	Record r17("r17", 17.00, 17);
+	Record r18("r18", 18.00, 18);
+	Record r19("r19", 19.00, 19);
 
 	// each block only 2 record
 	std::shared_ptr<Block> b1 = std::make_shared<Block>(2);
+	// std::cerr << "block address: " << b1 << std::endl;
 	std::shared_ptr<Block> b2 = std::make_shared<Block>(2);
+	// std::cerr << "block address b2: " << b2 << std::endl;
 	std::shared_ptr<Block> b3 = std::make_shared<Block>(2);
 	std::shared_ptr<Block> b4 = std::make_shared<Block>(2);
 	std::shared_ptr<Block> b5 = std::make_shared<Block>(2);
@@ -135,6 +245,13 @@ BPlusTree init() {
 	std::shared_ptr<Block> b8 = std::make_shared<Block>(2);
 	std::shared_ptr<Block> b9 = std::make_shared<Block>(2);
 	std::shared_ptr<Block> b10 = std::make_shared<Block>(2);
+
+	// std::cerr << "block address b3: " << b3 << std::endl;
+	// std::cerr << "block address b4: " << b4 << std::endl;
+	// std::cerr << "block address b5: " << b5 << std::endl;
+	// std::cerr << "block address b6: " << b6 << std::endl;
+	// std::cerr << "block address b7: " << b7 << std::endl;
+
 
 	b1->addRecord(r1);
 	b1->addRecord(r2);
@@ -163,31 +280,31 @@ BPlusTree init() {
 	b9->addRecord(r17);
 	b9->addRecord(r18);
 
-	bplustree.InsertNode(1.00, b1, 0);
-	bplustree.InsertNode(2.00, b1, 1);
+	bplustree.InsertKey(1.00, b1);
+	bplustree.InsertKey(2.00, b1);
 
-	bplustree.InsertNode(3.00, b2, 0);
-    bplustree.InsertNode(4.00, b2, 1);
+	bplustree.InsertKey(3.00, b2);
+    bplustree.InsertKey(4.00, b2);
 
-    bplustree.InsertNode(5.00, b3, 0);
-    bplustree.InsertNode(6.00, b3, 1);
+    bplustree.InsertKey(5.00, b3);
+    bplustree.InsertKey(6.00, b3);
  
-	bplustree.InsertNode(7.00, b4, 0);
-    bplustree.InsertNode(8.00, b4, 1);
+	bplustree.InsertKey(7.00, b4);
+    bplustree.InsertKey(8.00, b4);
 
-	bplustree.InsertNode(9.00, b5, 0);
-    bplustree.InsertNode(10.00, b5, 1);
+	bplustree.InsertKey(9.00, b5);
+    bplustree.InsertKey(10.00, b5);
 
-	bplustree.InsertNode(11.00, b6, 0);
-	bplustree.InsertNode(12.00, b6, 1);
+	bplustree.InsertKey(11.00, b6);
+	bplustree.InsertKey(12.00, b6);
 
-	bplustree.InsertNode(13.00, b7, 0);
-	bplustree.InsertNode(14.00, b7, 1);
+	bplustree.InsertKey(13.00, b7);
+	bplustree.InsertKey(14.00, b7);
 
-	bplustree.InsertNode(15.00, b8, 0);
-	bplustree.InsertNode(16.00, b8, 1);
+	bplustree.InsertKey(15.00, b8);
+	bplustree.InsertKey(16.00, b8);
 
-	bplustree.InsertNode(17.00, b9, 0);
+	bplustree.InsertKey(17.00, b9);
 
 	return bplustree;
 }
@@ -207,43 +324,151 @@ TEST (BPlusTreeTest, insertion) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
 
+	std::cerr << "num nodes" << bplustree.GetNumNodes() << std::endl;
+	std::cerr << "get height" << bplustree.GetHeight() << std::endl;
+
+	std::cerr << "stats...." << std::endl;
+	bplustree.PrintStats();
 	// try both odd and even for the size (might have problem with splitting)
 	// test does the leave node link together or not
 }
 
 TEST (BPlusTreeTest, linkLeafLevel) {
 	BPlusTree bplustree = init();
+
 	std::shared_ptr<Node> root = bplustree.GetRoot();
-	std::shared_ptr<Node> ll = std::static_pointer_cast<Node>(root->ptrs[0].ptr);
+	std::shared_ptr<Node> ll = std::static_pointer_cast<Node>(root->ptrs[0]);
 	while (ll != nullptr) {
 		if (ll->isLeaf) {
 			break;
 		} else {
-			ll = std::static_pointer_cast<Node>(ll->ptrs[0].ptr);
+			ll = std::static_pointer_cast<Node>(ll->ptrs[0]);
 		}
 	}
 
+	std::cerr << "test print node: " << std::endl;
+	bplustree.PrintNode(root);
+
+	for (int i = 0; i < root->ptrs.size(); i++) {
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
+		bplustree.PrintNode(itr);
+		std::cerr << "child: " << std::endl;
+		for (int r = 0; r < itr->ptrs.size(); r++) {
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
+		}
+		std::cerr << "end child" << std::endl;
+	}
+
+	std::cerr << "get first ll " << std::endl;
+	
 	while (ll != nullptr) {
 		for (int i = 0; i < ll->keys.size(); i++) {
 			std::cout << ll->keys[i] << ",";
-			std::shared_ptr<Block> blk =  std::static_pointer_cast<Block>(ll->ptrs[i].ptr);
-			Record r = blk->getRecord(ll->keys[i]);
-			std::cout << "tconst: " << r.tconst << ", numVotes" << r.numVotes << " | ";
+			std::shared_ptr<std::vector<std::shared_ptr<Block>>> llForEachKey =  std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(ll->ptrs[i]);
+			for (int r = 0; r < llForEachKey->size(); r++) {
+				std::shared_ptr<Block> blk = llForEachKey->at(r);
+				std::vector<Record> records = blk->getRecord(ll->keys[i]);
+				for (Record r : records) {
+					std::cout << "tconst: " << r.tconst << ", numVotes" << r.numVotes << " | ";
+				}
+			}
 		}
 		std::cout << "next node" << std::endl;
 		if (ll->keys.size() == ll->ptrs.size())
 			break;
-		ll = std::static_pointer_cast<Node>(ll->ptrs[ll->ptrs.size()-1].ptr);
+		ll = std::static_pointer_cast<Node>(ll->ptrs[ll->ptrs.size()-1]);
 	}
+}
+
+TEST (BPlusTree, insertDuplicate) {
+	BPlusTree bplustree(3);
+	
+	Record r1("r1", 1.00, 1);
+	Record r2("r2", 2.00, 1);
+	Record r3("r3", 3.00, 1);
+	Record r4("r4", 4.00, 2);
+	Record r5("r5", 5.00, 2);
+	Record r6("r6", 6.00, 3);
+	Record r7("r7", 7.00, 4);
+	Record r8("r8", 8.00, 5);
+	
+
+	std::shared_ptr<Block> b1 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b2 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b3 = std::make_shared<Block>(2);
+	std::shared_ptr<Block> b4 = std::make_shared<Block>(2);
+
+	b1->addRecord(r1);
+	b1->addRecord(r2);
+    
+    b2->addRecord(r3);
+	b2->addRecord(r4);
+
+	b3->addRecord(r5);
+    b3->addRecord(r6);
+	b4->addRecord(r7);
+	b4->addRecord(r8);
+
+	bplustree.InsertKey(1, b1);
+	bplustree.InsertKey(1, b1);
+
+	bplustree.InsertKey(1, b2);
+    bplustree.InsertKey(2, b2);
+
+	bplustree.InsertKey(2, b3);
+    bplustree.InsertKey(3, b3);
+ 
+	bplustree.InsertKey(4, b4);
+    bplustree.InsertKey(5, b4);
+
+	// bplustree.InsertKey(6, b5);
+    // bplustree.InsertKey(7, b5);
+
+
+	std::shared_ptr<Node> root = bplustree.GetRoot();
+	std::cerr << "test print node: " << std::endl;
+	bplustree.PrintNode(root);
+
+	// for (int i = 0; i < root->ptrs.size(); i++) {
+	// 	std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
+	// 	bplustree.PrintNode(itr);
+	// 	// std::cerr << "child: " << std::endl;
+	// 	// for (int r = 0; r < itr->ptrs.size(); r++) {
+	// 	// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
+	// 	// }
+	// 	std::cerr << "end child" << std::endl;
+	// }
+
+	bplustree.FindRange(1, 1);
+
+}
+
+TEST (BPlusTree, findDuplicateKeys) {
+	BPlusTree bplustree = initDuplicatedTree();
+	std::shared_ptr<Node> root = bplustree.GetRoot();
+	bplustree.PrintNode(root);
+
+	for (int i = 0; i < root->ptrs.size(); i++) {
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
+		bplustree.PrintNode(itr);
+		// std::cerr << "child: " << std::endl;
+		// for (int r = 0; r < itr->ptrs.size(); r++) {
+		// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
+		// }
+		// std::cerr << "end child" << std::endl;
+	}
+
+	bplustree.FindRange(2, 2);
+	bplustree.FindRange(3, 3);
 }
 
 TEST (BPlusTreeTest, findrange4to10) {
@@ -287,11 +512,11 @@ TEST (BPlusTree, deletionCase1) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -308,11 +533,11 @@ TEST (BPlusTree, deletionCase2) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -330,11 +555,11 @@ TEST (BPlusTree, deletionCase3) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -352,11 +577,11 @@ TEST (BPlusTree, deletionCase3_2) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -376,11 +601,11 @@ TEST (BPlusTree, deletionCase3_3) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -400,11 +625,11 @@ TEST (BPlusTree, deletionCase3_4) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -420,11 +645,11 @@ TEST (BPlusTree, deletionCaseRemoveKeyFoundInKeysAbove) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -445,11 +670,11 @@ TEST (BPlusTree, deletionCase3_5) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -471,11 +696,11 @@ TEST (BPlusTree, deletionCase3_6) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -499,11 +724,11 @@ TEST (BPlusTree, deleteTreeStep1) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -514,7 +739,7 @@ TEST (BPlusTree, deleteTreeStep1) {
 		if (ll->isLeaf) {
 			break;
 		} else {
-			ll = std::static_pointer_cast<Node>(ll->ptrs[0].ptr);
+			ll = std::static_pointer_cast<Node>(ll->ptrs[0]);
 		}
 	}
 
@@ -525,7 +750,7 @@ TEST (BPlusTree, deleteTreeStep1) {
 		std::cout << "next node" << std::endl;
 		if (ll->keys.size() == ll->ptrs.size())
 			break;
-		ll = std::static_pointer_cast<Node>(ll->ptrs[ll->ptrs.size()-1].ptr);
+		ll = std::static_pointer_cast<Node>(ll->ptrs[ll->ptrs.size()-1]);
 	}
 }
 
@@ -549,31 +774,14 @@ TEST (BPlusTree, deleteTreeStep2) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		// std::cerr << "child: " << std::endl;
 		// for (int r = 0; r < itr->ptrs.size(); r++) {
-		// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+		// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		// }
 		std::cerr << "end child" << std::endl;
 	}
-
-	// bplustree.DeleteKey(16);
-	// bplustree.DeleteKey(18);
-	
-	// root = bplustree.GetRoot();
-	// std::cerr << "test print node: " << std::endl;
-	// bplustree.PrintNode(root);
-
-	// for (int i = 0; i < root->ptrs.size(); i++) {
-	// 	std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
-	// 	bplustree.PrintNode(itr);
-	// 	std::cerr << "child: " << std::endl;
-	// 	for (int r = 0; r < itr->ptrs.size(); r++) {
-	// 		bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
-	// 	}
-	// 	std::cerr << "end child" << std::endl;
-	// }
 }
 
 TEST (BPlusTree, deleteTreeStep3) {
@@ -598,12 +806,8 @@ TEST (BPlusTree, deleteTreeStep3) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
-		// std::cerr << "child: " << std::endl;
-		// for (int r = 0; r < itr->ptrs.size(); r++) {
-		// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
-		// }
 		std::cerr << "end child" << std::endl;
 	}
 }
@@ -631,12 +835,8 @@ TEST (BPlusTree, deleteTreeStep4) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
-		// std::cerr << "child: " << std::endl;
-		// for (int r = 0; r < itr->ptrs.size(); r++) {
-		// 	bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
-		// }
 		std::cerr << "end child" << std::endl;
 	}
 }
@@ -667,7 +867,7 @@ TEST (BPlusTree, deleteTreeStep5) {
 
 TEST (BPlusTree, deleteTreeStepLast) {
 	BPlusTree bplustree = initDeletion();
-	std::cerr << "finish insertion" << std::endl;
+	std::cerr << "finish insertion, num nodes: " << bplustree.GetNumNodes() << std::endl;
 	bplustree.DeleteKey(16);
 	bplustree.DeleteKey(18);
 	bplustree.DeleteKey(17);
@@ -687,6 +887,8 @@ TEST (BPlusTree, deleteTreeStepLast) {
 	bplustree.DeleteKey(2);
 	bplustree.DeleteKey(11);
 	// bplustree.DeleteKey(1);
+
+	std::cerr << "num nodes after deletion: " << bplustree.GetNumNodes() << std::endl;
 
 	std::shared_ptr<Node> root = bplustree.GetRoot();
 	std::cerr << "is tree empty? " << (root == nullptr) << std::endl;
@@ -722,18 +924,26 @@ TEST (BPlusTree, leafLevelLinkAfterDeletion) {
 		if (ll->isLeaf) {
 			break;
 		} else {
-			ll = std::static_pointer_cast<Node>(ll->ptrs[0].ptr);
+			ll = std::static_pointer_cast<Node>(ll->ptrs[0]);
 		}
 	}
 
 	while (ll != nullptr) {
-		for (float key : ll->keys) {
-			std::cout << key << ",";
+		for (int i = 0; i < ll->keys.size(); i++) {
+			std::cout << ll->keys[i] << ",";
+			std::shared_ptr<std::vector<std::shared_ptr<Block>>> llForEachKey =  std::static_pointer_cast<std::vector<std::shared_ptr<Block>>>(ll->ptrs[i]);
+			for (int r = 0; r < llForEachKey->size(); r++) {
+				std::shared_ptr<Block> blk = llForEachKey->at(r);
+				std::vector<Record> records = blk->getRecord(ll->keys[i]);
+				for (Record r : records) {
+					std::cout << "tconst: " << r.tconst << ", numVotes" << r.numVotes << " | ";
+				}
+			}
 		}
 		std::cout << "next node" << std::endl;
 		if (ll->keys.size() == ll->ptrs.size())
 			break;
-		ll = std::static_pointer_cast<Node>(ll->ptrs[ll->ptrs.size()-1].ptr);
+		ll = std::static_pointer_cast<Node>(ll->ptrs[ll->ptrs.size()-1]);
 	}
 }
 
@@ -744,11 +954,11 @@ TEST (BPlusTree, initDeletion) {
 	bplustree.PrintNode(root);
 
 	for (int i = 0; i < root->ptrs.size(); i++) {
-		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i].ptr);
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
 		bplustree.PrintNode(itr);
 		std::cerr << "child: " << std::endl;
 		for (int r = 0; r < itr->ptrs.size(); r++) {
-			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r].ptr));
+			bplustree.PrintNode(std::static_pointer_cast<Node>(itr->ptrs[r]));
 		}
 		std::cerr << "end child" << std::endl;
 	}
@@ -759,14 +969,23 @@ TEST (BPlusTree, deletionKeyDoesNotExists) {
 	bplustree.DeleteKey(20);
 }
 
-TEST (BPlusTree, findExist) {
-	BPlusTree bplustree = init();
-	bplustree.Find(10);
-}
+TEST (BPlusTree, deleteKeysFromDuplicatedTree) {
+	BPlusTree bplustree = initDuplicatedTree();
+	std::shared_ptr<Node> root = bplustree.GetRoot();
+	bplustree.PrintNode(root);
 
-TEST (BPlusTree, finddoesNotExist) {
-	BPlusTree bplustree = init();
-	bplustree.Find(100);
+	for (int i = 0; i < root->ptrs.size(); i++) {
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
+		bplustree.PrintNode(itr);
+	}
+
+	bplustree.DeleteKey(2);
+
+	bplustree.PrintNode(root);
+	for (int i = 0; i < root->ptrs.size(); i++) {
+		std::shared_ptr<Node> itr = std::static_pointer_cast<Node>(root->ptrs[i]);
+		bplustree.PrintNode(itr);
+	}
 }
 
 int main(int argc, char** argv){

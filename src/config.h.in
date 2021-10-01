@@ -3,6 +3,6 @@
 #define INCLUDE_GUARD
 
 #define PROJECT_NAME "@DBMS@"
-#define PROJECT_VER "@0.1@"
+#define PROJECT_VER "@1.0@"
 
 #endif

@@ -1,159 +1,166 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>
-#include <vector>
 #include <sstream>
-#include <cstdlib>
-#include <cstdio>
-#include <string>
-#include <cmath>
+
 #include "record.h"
 #include "block.h"
 #include "storage.h"
-using std::vector;
-using namespace std;
+#include "bplustree.h"
 
-int main()
-{
+void getAverageRating(std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>>& blkPtrs) {
+    double totalRatings = 0;
+    int totalRecords = 0;
+    int numIOForDataBlocks = 0;
 
-    int block_size;
+    int blockForPrint = 0;
+    bool printBlock = true;
+
+    for (std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>& keyBlks : blkPtrs) {
+        for (int i = 0; i < keyBlks.second->size(); i++) {
+            std::shared_ptr<Block> keyBlk = keyBlks.second->at(i);
+            if (printBlock) {
+                blockForPrint++;
+                if (blockForPrint >= 5) {
+                    printBlock = false;
+                }
+                std::cout << "Content in block accessed: ";
+                keyBlk->toString();
+            }
+
+            std::vector<Record> records = keyBlk->getRecord(keyBlks.first);
+            for (Record& r : records) {
+                totalRatings += r.averageRating;
+            }
+            totalRecords += records.size();
+        }
+        numIOForDataBlocks += keyBlks.second->size();
+    }
+    double averageRating = totalRatings/totalRecords;
+    std::cout << "-------------- access data block -------------" << std::endl;
+    std::cout << "Number of data block IO: " << numIOForDataBlocks << std::endl;;
+    std::cout << "Average Ratings: " << averageRating << std::endl;
+    std::cout << "----------------------------------------------" << std::endl;
+}
+
+int main() {
+
+    // get block size
+    int blockSize;
+    std::cout << "Enter Block Size" << std::endl;
+    std::cin >> blockSize;
+    std::cout << "Building Storage with Block Size of " << blockSize << " bytes\n" <<  std::endl;
+
+    /*
+    1. max record in a block
+    2. max keys in a Node (for bplustree) - aka parameter n
+    3. max keys in a Linkedlist (for storing ptrs to block)
+    */
+
+   int maxRecordInBlock = floor(blockSize/sizeof(Record));
+
+    int sizeOfOtherDataInNode = sizeof(bool) + sizeof(uint32_t);
+    int sizeOfKey = sizeof(float) + 4;    // 4 is for the extra ptr
+    int maxNumKeyInNode = floor((blockSize - sizeOfOtherDataInNode - 4) / sizeOfKey);
+
+    std::cout <<"-----------------------------------------" << std::endl;
+    std::cout << "Max records in a block: " << maxRecordInBlock << std::endl;
+    std::cout << "Max key in a B+ tree node: " << maxNumKeyInNode << std::endl;
+    std::cout <<"-----------------------------------------\n" << std::endl;
+
+    // init storage
+    Storage storage;
+    Block initBlock(maxRecordInBlock);
+    std::shared_ptr<Block> initBlockPtr = std::make_shared<Block>(std::move(initBlock));
+    storage.addBlock(initBlockPtr);
+    int lastBlockIndex = storage.getNumBlocks() - 1;
+
+    // init bplustree
+    BPlusTree bplustree(maxNumKeyInNode);
 
     //Read Input File
-    ifstream infile;
-    infile.open("data.tsv");
-    if (!infile)
-    {
-        cout << "Error in reading the file" << endl; //show error if can't read file
+    std::ifstream infile;
+    infile.open("../data/data.tsv");
+    std::cout << "Reading file... " << std::endl;
+
+    // infile.open("../data/data.tsv");
+    if (!infile) {
+        std::cout << "Error in reading the file" << std::endl; //show error if can't read file
         exit(1);
+    } else {
+        std::cout << "File sucessfully opened, processing file ..." << std::endl;
     }
 
-    //Initialize the block size based on input
-    cout << "Enter Block Size" << endl;
-    cin >> block_size;
+    // process data line by line
+    std::string line;
 
-    cout << "Building Storage with Block Size of " << block_size << " bytes...." <<  endl;
+    getline(infile, line);     // skip header
 
-    //Declaring and Initializing the variables
-
-    string row;
-    Storage s;
-    Block blk;
-    Record r;
-    int max_records_in_block = floor(block_size/r.getRecordSize());
-    s.blocks.push_back(blk);
-    int block_count = s.getNumBlocks()-1;
-
-    //Skip Header
-    //getline(infile, row);
-
-    //For all lines in the file
-    while(getline(infile, row)) {
-        vector <string> tokens;
-        istringstream iss(row);
-        string token;
-
-        //Push valid token to vector tokens
-        while(getline(iss, token, '\t')){
-            tokens.push_back(token);
+    while(getline(infile, line)) {
+        std::vector<std::string> fields;
+        std::istringstream iss(line);
+        std::string field;
+        
+        // keep fields in vector
+        while(getline(iss, field, '\t')) {
+            fields.push_back(field);
         };
 
-        //Taking values from each row and modifying the first column by removing 'tt' from the data.
-        istringstream (tokens[0].erase(0,2)) >> r.tconst;
-        istringstream (tokens[1]) >> r.averageRating;
-        istringstream (tokens[2]) >> r.numVotes;
+        // convert into Record
+        Record newRecord;
+        newRecord.tconst = fields[0];
+        std::istringstream (fields[1]) >> newRecord.averageRating;
+        std::istringstream (fields[2]) >> newRecord.numVotes;
 
-
-        //If there is space in current block, add record to this block else create a new block and and record to the new block
-
-        //Max number of records in block shouldn't exceed floor of BLOCK_SIZE / RECORD_SIZE
-        if(s.blocks[block_count].getNumRecords() < max_records_in_block)
-        {
-            s.blocks[block_count].addRecord(r);//push a record r to block b
-            //cout << "block " << block_count << " Num Records:" << s.blocks[block_count].getNumRecords() << endl;
-            //cout<< "Current Block Size: " << s.blocks[block_count].getBlockSize() << endl;
-        }
-        else
-        {
-            //cout<< "Number Records " << s.blocks[block_count].getNumRecords() << endl;
-            //cout<< "Ending Block Size: " << s.blocks[block_count].getBlockSize() << endl;
-            block_count++;//increment block counter
-            Block blk; //create a new block
-            s.addBlock(blk);
-            s.blocks[block_count].addRecord(r);//push a record r to new block b
-            //cout << "new_block " << block_count << " Num Records:" << s.blocks[block_count].getNumRecords() << endl;
-        };
-
-
-    }
-
-    infile.close();//close the file after finish reading
-    cout <<"--------------------------" << endl;
-    cout <<"Number of Records: " << s.getNumRecords() << endl; //output the final number of blocks for a given block size
-    cout <<"Size of Record: " << r.getRecordSize() << " bytes" << endl;
-    cout <<"Number of Blocks: " << s.getNumBlocks() << endl;
-    cout <<"Size of Block: " << block_size << " bytes" << endl;
-    cout <<"Max Records in Block: " << max_records_in_block << " Records" << endl;
-    cout <<"Min Records in Block: " << s.blocks[s.getNumBlocks()-1].getNumRecords() << " Records" << endl;
-    cout <<"Total Size of Storage: " << ((double)s.getStorageSize() / 1024000)<< " Mb" << endl;
-    cout <<"--------------------------" << endl;
-    cout <<"Building B+ Tree Index on Average Rating" << endl;
-
-
-/*    class BPlusTree tree;
-
-    int maxNumKeys =  floor((block_size-4)/8); //Parameter N
-    int min_internal = floor(maxNumKeys/2);
-    int min_leaf = floor((maxNumKeys+1)/2);
-
-    int num_levels = 2;
-
-    for(int i = 1; i < 999; i++ ){
-        int max_records_indexed = pow(maxNumKeys,i)*maxNumKeys;
-        if(max_records_indexed >= s.getNumRecords()){
-            break;
-
-        }else{
-            num_levels+=1;
-        }
-    }
-
-    tree.Initialize(maxNumKeys);
-
-    tree.Open_Output_File();
-    vector <Block *> block_ptrs;
-    for (int i = 0; i < s.getNumBlocks();i++){
-        struct Block *block_ptr;
-        block_ptr = &s.blocks[i];
-        block_ptrs.push_back(block_ptr);
-        std::ostringstream address;
-        address << (void const *)block_ptr;
-        std:string name = address.str();
-
-        for(int j = 0; j < block_ptr->getNumRecords(); j++){
-            tree.Insert(float(block_ptr->records[j].numVotes), i);
-
+        // insert into block in storage if there is space in the last block
+        std::shared_ptr<Block> blockPtr;
+        if (storage.blocks[lastBlockIndex]->haveSpace()) {
+            storage.blocks[lastBlockIndex]->addRecord(newRecord);
+            blockPtr = storage.blocks[lastBlockIndex];
+        } else {
+            Block newBlock(maxRecordInBlock);
+            newBlock.addRecord(newRecord);
+            blockPtr = std::make_shared<Block>(newBlock);
+            storage.addBlock(blockPtr);
+            lastBlockIndex++;
         }
 
+        bplustree.InsertKey(newRecord.numVotes, blockPtr);
     }
-    cout << "B+ Tree has been created" << endl;
-    tree.Print_Tree();
 
-    cout <<"--------------------------" << endl;
-    cout << "Searching Records with Average Rating = 8" << endl;
-    tree.Search(8,s);
+    infile.close();     // close file
+    
+    std::cout << "Processing done... \n" << std::endl;
 
-    cout <<"--------------------------" << endl;
-    cout << "Searching Records with Average Rating from 7 - 9" << endl;
+    std::cout <<"Experiment 1" << std::endl; 
+    std::cout <<"---------- Storage Statistic ------------" << std::endl;
+    std::cout <<"Number of Records: " << storage.getNumRecords() << std::endl; //output the final number of blocks for a given block size
+    std::cout <<"Size of Record: " << sizeof(Record) << " bytes" << std::endl;
+    std::cout <<"Number of Blocks: " << storage.getNumBlocks() << std::endl;
+    std::cout <<"Size of Block: " << blockSize << " bytes" << std::endl;
+    std::cout <<"Max Records in Block: " << maxRecordInBlock << " Records" << std::endl;
+    std::cout <<"Min Records in Block: " << storage.blocks[storage.getNumBlocks()-1]->getNumRecords() << " Records" << std::endl;
+    std::cout <<"Total Size of Storage: " << ((double)storage.getStorageSize() / 1024000)<< " Mb" << std::endl;
+    std::cout <<"-----------------------------------------\n" << std::endl;
 
-    tree.Search(7.0,9.0,s);
+    std::cout <<"Experiment 2: After insertion of data into B+ tree: " << std::endl;
+    bplustree.PrintStats();
+    std::cout << std::endl;
 
-    cout <<"--------------------------" << endl;
-    cout << "Deleting Records with Average Rating = 7" << endl;
-    tree.Search_Delete(7.0,s);
-    tree.Update_Tree(s,20);
+    std::cout <<"Experiment 3: find records with numVotes = 500" << std::endl; 
+    std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find500 = bplustree.FindRange(500, 500);
+    getAverageRating(find500);
+    std::cout << std::endl;
 
+    std::cout <<"Experiment 4: find records with numVotes from 30,000 to 40,000" << std::endl; 
+    std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find30kTo40k = bplustree.FindRange(30000, 40000);
+    getAverageRating(find30kTo40k);
+    std::cout << std::endl;
 
-    tree.Close_Output_File();
+    std::cout <<"Experiment 5: Delete records with numVotes = 1000" << std::endl;
+    int numNodeDeleted = bplustree.DeleteKey(1000);
+    std::cout << "Number of nodes deleted: " << numNodeDeleted << std::endl;
+    bplustree.PrintStats();
 
-    return 1;*/
+    std::cout << "program end" << std::endl;
 }

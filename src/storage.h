@@ -3,19 +3,19 @@
 
 #include "block.h"
 #include <vector>
+#include <memory>
 
 /*
 Singleton structure representing the disk storage of a database system.
 holds multiple blocks in memory, where each blocks holds multiple records.
 */
 
-struct Storage
-{
+struct Storage {
     //Blocks in this record
-    std::vector <Block> blocks;
+    std::vector <std::shared_ptr<Block>> blocks;
 
     //Add a block
-    void addBlock(Block block);
+    void addBlock(std::shared_ptr<Block> block);
 
     //Get number of blocks
     int getNumBlocks();

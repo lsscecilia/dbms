@@ -12,31 +12,26 @@ void Block::addRecord(Record record){
 void Block::DeleteRecord(float key) {
     if (records.size() == 0) {
         std::cerr << "[Block::DeleteRecord] error, no record avaliable" << std::endl;
-        //return;
+        return;
     }
-    int deletePos;
-    for (deletePos = 0; deletePos < records.size(); deletePos++) {
-        if (records[deletePos].averageRating == key) {
-            break;
+    std::vector<int> deletePos;
+    for (int i = records.size()-1; i >= 0; i--) {
+        if (records[i].numVotes == key) {
+            records.erase(records.begin() + i);
         }
-    }
-    records.erase(records.begin() + deletePos);
-    std::cerr << "[Block::DeleteRecord] Delete record, key - " << key << ", records left in block: " << records.size();
-    if (records.size() > 0) {
-        std::cerr << "(" << records[0].averageRating << std::endl;
-    } else {
-        std::cerr << std::endl;
     }
 } 
 
-Record Block::getRecord(float key) {
+std::vector<Record> Block::getRecord(float key) {
+    std::vector<Record> recordFound;
     for (Record record : records) {
-        if (record.averageRating == key) {
-            return record;
+        if (record.numVotes == key) {
+            recordFound.push_back(record);
+            // return record;
         }
     }
     // return empty record, but should not happen
-    return Record();
+    return recordFound;
 }
 
 int Block::getNumRecords(){
@@ -51,8 +46,11 @@ int Block::getBlockSize(){
     return blockSize;
 }
 
-std::string Block::toString(int offset) {
-    return records[offset].toString();
+void Block::toString() {
+    for (Record r : records) {
+        std::cout << r.tconst << " ,";
+    }
+    std::cout << std::endl;
 }
 
 
