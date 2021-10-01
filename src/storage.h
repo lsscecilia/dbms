@@ -10,8 +10,7 @@ Singleton structure representing the disk storage of a database system.
 holds multiple blocks in memory, where each blocks holds multiple records.
 */
 
-struct Storage
-{
+struct Storage {
     //Blocks in this record
     std::vector <std::shared_ptr<Block>> blocks;
 

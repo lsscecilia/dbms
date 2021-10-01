@@ -5,8 +5,7 @@
 #include <vector>
 
 //Data structure defining a block holding many records
-struct Block
-{
+struct Block {
     std::uint16_t maxRecord;
 
     //Records in this block

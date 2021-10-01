@@ -1,5 +1,6 @@
 #include "record.h"
 #include <iostream>
+
 using namespace std;
 
 void Record::setRecord(string tconst_, float averageRating_, int numVotes_){

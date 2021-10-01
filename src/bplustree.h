@@ -4,23 +4,22 @@
 #include <memory>
 #include <vector>
 #include "block.h"
+
 #include<iostream>
 
-// non leaf node points to Node
-// leaf node points to vector with all the blocks
 struct Node {
-    std::vector<std::shared_ptr<void>> ptrs;
+    std::vector<std::shared_ptr<void>> ptrs;     // non-leaf node points to node, leaf node points to vector with shared_ptr of the blocks
     std::vector<float> keys;
     bool isLeaf;
-    std::uint32_t size;
+    std::uint32_t size;    // max number of keys in the Node
     Node(bool isLeaf, int size) : isLeaf(isLeaf), size(size) {};
 };
 
-// N is number of keys in a tree node
+
 class BPlusTree {
     std::shared_ptr<Node> root;
-    std::uint32_t size;
-    int numNodes;
+    std::uint32_t size;    // max number of keys in a tree node
+    int numNodes;    // number of nodes in this tree
     
     public:
     // todo: take in linkedlist size
@@ -32,7 +31,7 @@ class BPlusTree {
 
     ~BPlusTree() = default;
 
-    void InsertNode(float key, std::shared_ptr<Block> blockPtr);
+    void InsertKey(float key, std::shared_ptr<Block> blockPtr);
     void InsertInternal(float key, std::shared_ptr<Node> parent, std::shared_ptr<Node> child);
     int DeleteKey(float key);
     int RemoveInternal(float key, std::shared_ptr<Node> traverseNode, std::shared_ptr<Node> childToDelete);
@@ -41,7 +40,7 @@ class BPlusTree {
     void PrintNode(std::shared_ptr<Node> node);
     void PrintNodeWithoutPtr(std::shared_ptr<Node> node);
     void PrintRecordsInNode(std::shared_ptr<Node> node);
-    void PrintRecordInLL(std::shared_ptr<void> ptr, float key);
+    void PrintRecordOfKey(std::shared_ptr<void> ptr, float key);
     std::shared_ptr<Node> GetRoot();
     void SetRoot(std::shared_ptr<Node> newRoot);
     std::shared_ptr<Node> FindParent(std::shared_ptr<Node> root, std::shared_ptr<Node> child);

@@ -8,8 +8,7 @@ tconst (String)
 averageRating (float)
 numVotes (int)
 */
-struct Record
-{
+struct Record {
 public:
     std::string tconst;
     float averageRating;

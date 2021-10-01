@@ -125,7 +125,7 @@ int main() {
             lastBlockIndex++;
         }
 
-        bplustree.InsertNode(newRecord.numVotes, blockPtr);
+        bplustree.InsertKey(newRecord.numVotes, blockPtr);
     }
 
     infile.close();     // close file
