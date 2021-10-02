@@ -49,7 +49,8 @@ Run test:
 ./build/bin/dbms_test
 ```
 
-## Windows Installation Guide
+## To install dependencies and build project on Windows
+Before building the project, please change line 83 of the main.cpp file to the absolute path of the data folder. (This is because in windows, the parent dir of executable file might be in different folder due to the difference in ide) <br/>
 
 Ensure the following dependencies are installed:
 
@@ -72,4 +73,4 @@ Perform the following steps:
     ```
 1. Click on the wrench icon located at the bottom bar and select `GCC 10.3.0 x86_64-w64-mingw32`, which is the latest version as of 2/10/2021.
 1. Click on the `Build` button with a gear icon, located at the bottom bar of the VSCode window.
-1. Once done, navigate to the executable in build/bin/dbms.exe and run the dbms.exe executable to start. The project will open in a command shell.
+1. Once done, navigate to the executable in build/bin/dbms.exe and run the dbms.exe executable to start. The project will open in a command shell
