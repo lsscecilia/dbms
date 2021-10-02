@@ -756,6 +756,12 @@ int BPlusTree::GetHeight() {
 }
 
 void BPlusTree::PrintStats() {
+    if (root == nullptr) {
+        std::cout << "------------- B+ Tree Statistic --------------" << std::endl;
+        std::cout << "B+ tree is empty" << std::endl;
+        std::cout << "----------------------------------------------" << std::endl;
+        return;
+    }
     std::cout << "------------- B+ Tree Statistic --------------" << std::endl;
     std::cout << "Parmeter N of B+ Tree: " << size << std::endl;
     std::cout << "Number of nodes in B+ Tree: " << numNodes << std::endl;
