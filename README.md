@@ -50,5 +50,21 @@ Run test:
 ```
 
 ## To install dependencies and build project on Windows
-Please refer to this guide:
-https://www.stereolabs.com/docs/app-development/cpp/windows/#building-on-windows
+Before building the project, please change line 83 of the main.cpp file to the absolute path of the data folder. (This is because in windows, the parent dir of executable file might be in different folder due to the difference in ide) <br/>
+
+Install a IDE of your choice and follow their respective guide for cmake and build the project:
+### Clion
+install: https://www.jetbrains.com/clion/ <br/>
+guide: https://www.jetbrains.com/help/clion/creating-new-project-from-scratch.html
+
+### Visual studio code
+install: https://code.visualstudio.com/ <br/>
+guide: https://computingonplains.wordpress.com/building-c-applications-with-cmake-and-visual-studio-code/
+
+### Visual studio: 
+install: https://visualstudio.microsoft.com/downloads/ <br/>
+guide: https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-160
+
+
+
+
