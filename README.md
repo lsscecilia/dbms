@@ -3,6 +3,7 @@
 ## Dependencies
 1. gcc 4.8+ | clang 3.5+
 2. cmake 3.11+
+3. gtest
 
 ## To install dependencies
 
@@ -33,6 +34,7 @@ To check that cmake and gcc is installed: <br/>
 You should be able to see the version that u have downloaded
 
 ## Build project for Linux and Mac
+Please ensure that you have a active wifi connection as gtest module will be fetch automatically
 
 ``` bash
 cmake -H. -Bbuild
@@ -40,6 +42,8 @@ cd build && make
 ```
 
 ## Run project
+In the dbms directory:
+
 ```
 ./build/bin/dbms
 ```
