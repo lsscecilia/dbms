@@ -44,7 +44,6 @@ void getAverageRating(std::vector<std::pair<float, std::shared_ptr<std::vector<s
 }
 
 int main() {
-
     // get block size
     int blockSize;
     std::cout << "Enter Block Size" << std::endl;
@@ -57,7 +56,7 @@ int main() {
     3. max keys in a Linkedlist (for storing ptrs to block)
     */
 
-   int maxRecordInBlock = floor(blockSize/sizeof(Record));
+    int maxRecordInBlock = floor(blockSize/sizeof(Record));
 
     int sizeOfOtherDataInNode = sizeof(bool) + sizeof(uint32_t);
     int sizeOfKey = sizeof(float) + 4;    // 4 is for the extra ptr
@@ -78,14 +77,13 @@ int main() {
     // init bplustree
     BPlusTree bplustree(maxNumKeyInNode);
 
-    //Read Input File
+    // Read Input File
     std::ifstream infile;
     infile.open("../data/data.tsv");
     std::cout << "Reading file... " << std::endl;
 
-    // infile.open("../data/data.tsv");
     if (!infile) {
-        std::cout << "Error in reading the file" << std::endl; //show error if can't read file
+        std::cout << "Error in reading the file" << std::endl;    // show error if can't read file
         exit(1);
     } else {
         std::cout << "File sucessfully opened, processing file ..." << std::endl;
@@ -96,21 +94,21 @@ int main() {
 
     getline(infile, line);     // skip header
 
-    while(getline(infile, line)) {
+    while (getline(infile, line)) {
         std::vector<std::string> fields;
         std::istringstream iss(line);
         std::string field;
-        
+
         // keep fields in vector
-        while(getline(iss, field, '\t')) {
+        while (getline(iss, field, '\t')) {
             fields.push_back(field);
-        };
+        }
 
         // convert into Record
         Record newRecord;
         newRecord.tconst = fields[0];
-        std::istringstream (fields[1]) >> newRecord.averageRating;
-        std::istringstream (fields[2]) >> newRecord.numVotes;
+        std::istringstream(fields[1]) >> newRecord.averageRating;
+        std::istringstream(fields[2]) >> newRecord.numVotes;
 
         // insert into block in storage if there is space in the last block
         std::shared_ptr<Block> blockPtr;
@@ -129,30 +127,30 @@ int main() {
     }
 
     infile.close();     // close file
-    
+
     std::cout << "Processing done... \n" << std::endl;
 
-    std::cout <<"Experiment 1" << std::endl; 
+    std::cout <<"Experiment 1" << std::endl;
     std::cout <<"---------- Storage Statistic ------------" << std::endl;
-    std::cout <<"Number of Records: " << storage.getNumRecords() << std::endl; //output the final number of blocks for a given block size
+    std::cout <<"Number of Records: " << storage.getNumRecords() << std::endl;    // output the final number of blocks for a given block size
     std::cout <<"Size of Record: " << sizeof(Record) << " bytes" << std::endl;
     std::cout <<"Number of Blocks: " << storage.getNumBlocks() << std::endl;
     std::cout <<"Size of Block: " << blockSize << " bytes" << std::endl;
     std::cout <<"Max Records in Block: " << maxRecordInBlock << " Records" << std::endl;
     std::cout <<"Min Records in Block: " << storage.blocks[storage.getNumBlocks()-1]->getNumRecords() << " Records" << std::endl;
-    std::cout <<"Total Size of Storage: " << ((double)storage.getStorageSize() / 1024000)<< " Mb" << std::endl;
+    std::cout <<"Total Size of Storage: " << static_cast<double>(storage.getStorageSize() / 1024000)<< " Mb" << std::endl;
     std::cout <<"-----------------------------------------\n" << std::endl;
 
     std::cout <<"Experiment 2: After insertion of data into B+ tree: " << std::endl;
     bplustree.PrintStats();
     std::cout << std::endl;
 
-    std::cout <<"Experiment 3: find records with numVotes = 500" << std::endl; 
+    std::cout <<"Experiment 3: find records with numVotes = 500" << std::endl;
     std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find500 = bplustree.FindRange(500, 500);
     getAverageRating(find500);
     std::cout << std::endl;
 
-    std::cout <<"Experiment 4: find records with numVotes from 30,000 to 40,000" << std::endl; 
+    std::cout <<"Experiment 4: find records with numVotes from 30,000 to 40,000" << std::endl;
     std::vector<std::pair<float, std::shared_ptr<std::vector<std::shared_ptr<Block>>>>> find30kTo40k = bplustree.FindRange(30000, 40000);
     getAverageRating(find30kTo40k);
     std::cout << std::endl;

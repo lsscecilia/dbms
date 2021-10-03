@@ -1,7 +1,8 @@
-#ifndef RECORD_H
-#define RECORD_H
+#ifndef RECORD_H_
+#define RECORD_H_
 
-#include <iostream>
+#include <string>
+
 /*
 Data structure representing a movie record stored in blocks in the database, consisting of 3 columns:
 tconst (String)
@@ -9,20 +10,20 @@ averageRating (float)
 numVotes (int)
 */
 struct Record {
-public:
+ public:
     std::string tconst;
     float averageRating;
     int numVotes;
 
-    //Setter
+    // Setter
     void setRecord(std::string tconst, float averageRating, int numVotes);
 
-    //Get record size
+    // Get record size
     int getRecordSize();
 
     std::string toString();
 
-    Record(std::string tconst, float averageRating, int numVotes) : tconst(tconst), averageRating(averageRating), numVotes(numVotes) {};
+    Record(std::string tconst, float averageRating, int numVotes) : tconst(tconst), averageRating(averageRating), numVotes(numVotes) {}
     Record() {
         tconst = "";
         averageRating = -1;
@@ -30,4 +31,4 @@ public:
     }
 };
 
-#endif
+#endif    // RECORD_H_
