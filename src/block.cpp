@@ -1,11 +1,8 @@
+#include <iostream>
+
 #include "block.h"
-#include "record.h"
-#include <vector>
 
-using namespace std;
-
-
-void Block::addRecord(Record record){
+void Block::addRecord(Record record) {
     records.push_back(record);
 }
 
@@ -20,7 +17,7 @@ void Block::DeleteRecord(float key) {
             records.erase(records.begin() + i);
         }
     }
-} 
+}
 
 std::vector<Record> Block::getRecord(float key) {
     std::vector<Record> recordFound;
@@ -34,13 +31,13 @@ std::vector<Record> Block::getRecord(float key) {
     return recordFound;
 }
 
-int Block::getNumRecords(){
+int Block::getNumRecords() {
     return records.size();
 }
 
-int Block::getBlockSize(){
+int Block::getBlockSize() {
     int blockSize = 0;
-    for (int i=0; i < getNumRecords(); i++){
+    for (int i = 0; i < getNumRecords(); i++) {
         blockSize += records[i].getRecordSize();
     }
     return blockSize;

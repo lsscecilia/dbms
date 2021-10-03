@@ -1,18 +1,18 @@
-#ifndef BPLUSTREE_H
-#define BPLUSTREE_H
+#ifndef BPLUSTREE_H_
+#define BPLUSTREE_H_
 
 #include <memory>
 #include <vector>
-#include "block.h"
+#include <utility>
 
-#include<iostream>
+#include "block.h"
 
 struct Node {
     std::vector<std::shared_ptr<void>> ptrs;     // non-leaf node points to node, leaf node points to vector with shared_ptr of the blocks
     std::vector<float> keys;
     bool isLeaf;
     std::uint32_t size;    // max number of keys in the Node
-    Node(bool isLeaf, int size) : isLeaf(isLeaf), size(size) {};
+    Node(bool isLeaf, int size) : isLeaf(isLeaf), size(size) {}
 };
 
 
@@ -20,14 +20,12 @@ class BPlusTree {
     std::shared_ptr<Node> root;
     std::uint32_t size;    // max number of keys in a tree node
     int numNodes;    // number of nodes in this tree
-    
-    public:
-    // todo: take in linkedlist size
-    BPlusTree(std::uint32_t size) : size(size) {
-        // isit by default already nullptr
+
+ public:
+    explicit BPlusTree(std::uint32_t size) : size(size) {
         root = nullptr;
         numNodes = 0;
-    };
+    }
 
     ~BPlusTree() = default;
 
@@ -53,4 +51,4 @@ class BPlusTree {
     void PrintStats();
 };
 
-#endif
+#endif    // BPLUSTREE_H_

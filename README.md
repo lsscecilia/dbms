@@ -1,5 +1,19 @@
 # Database project 1 - Database management system
 
+## Overall
+This project aims to mock a database management system by 
+1. Mocking a hard disk which requires IO and processing when it is fetched into the main memory and it could only be fetched in blocks
+2. Implementing a B+ tree for indexing
+
+By logically arranging the data and forming a B+ tree, we then analyse the number of I/Os required to perform actions on the data set. These actions include searching, inserting and deleting records. <br/>
+
+We then further experiment by changing the block size and reviewing how it affects the storage and indexing capabilities of the B+ tree. <br/>
+
+We implemented this project in C++ language. <br/>
+
+Overall structure of database management system:
+![picture alt](databaseDesignStructure.png "Title is optional")
+
 ## Dependencies
 1. gcc 4.8+ | clang 3.5+
 2. cmake 3.11+

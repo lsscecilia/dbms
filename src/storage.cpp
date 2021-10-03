@@ -1,19 +1,19 @@
-#include "storage.h"
+
 #include <iostream>
 #include <vector>
 #include <memory>
 
-using namespace std;
+#include "storage.h"
 
-void Storage::addBlock(std::shared_ptr<Block> block){
+void Storage::addBlock(std::shared_ptr<Block> block) {
     blocks.push_back(block);
 }
 
-int Storage::getNumBlocks(){
+int Storage::getNumBlocks() {
     return blocks.size();
 }
 
-int Storage::getNumRecords(){
+int Storage::getNumRecords() {
     int numRecords = 0;
 
     for (int i=0; i < getNumBlocks(); i++){
@@ -22,7 +22,7 @@ int Storage::getNumRecords(){
     return numRecords;
 }
 
-int Storage::getStorageSize(){
+int Storage::getStorageSize() {
     int storageSize = 0;
 
     for (int i =0; i < getNumBlocks(); i++){
